@@ -1,15 +1,15 @@
 [project]
 name = "colibricf"
-version = "0.0.12"
+version = "0.0.13"
 description = "Code functions to control a Drone using clover"
 authors = [
   { name="Educa Drones", email="educadrones.contato@gmail.com" },
   { name="Bruno Rodrigues", email="brunorodriguesmtv0@gmail.com"},
-  { name="Gabriel Montalvão", email=""}
+  { name="Gabriel Montalvão", email="gabriel.msantos7@hotmail.com"}
 ]
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.12"
+requires-python = ">=3.8"
 dependencies = []
 
 [project.urls]
