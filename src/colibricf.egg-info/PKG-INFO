@@ -1,12 +1,12 @@
 Metadata-Version: 2.4
 Name: colibricf
-Version: 0.0.13
+Version: 0.0.133
 Summary: Code functions to control a Drone using clover
 Author-email: Educa Drones <educadrones.contato@gmail.com>, Bruno Rodrigues <brunorodriguesmtv0@gmail.com>, Gabriel Montalvão <gabriel.msantos7@hotmail.com>
 License: MIT
 Project-URL: Homepage, https://github.com/EDUCA-DRONES/Colibri_CF
 Project-URL: Repository, https://github.com/EDUCA-DRONES/Colibri_CF
-Requires-Python: >=3.10
+Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 
 # Colibri Code Functions 

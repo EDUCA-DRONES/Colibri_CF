@@ -2,7 +2,7 @@
 # Use this example to create new missions
 
 import rospy
-import colibricf
+from colibricf.drone import Drone
 drone = Drone()
 
 TAKEOFF_ALTITUDE = 1.4
