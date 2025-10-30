@@ -1,6 +1,6 @@
 [project]
 name = "colibricf"
-version = "0.0.133"
+version = "1.0.0"
 description = "Code functions to control a Drone using clover"
 authors = [
   { name="Educa Drones", email="educadrones.contato@gmail.com" },

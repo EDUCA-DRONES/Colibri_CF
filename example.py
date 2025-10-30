@@ -2,25 +2,23 @@
 # Use this example to create new missions
 
 import rospy
-from colibricf.drone import Drone
-drone = Drone()
+from colibricf.task import Task
 
-TAKEOFF_ALTITUDE = 1.4
+class Mission(Task):
+    '''
+    Example of implementation. 
+    '''
 
-try:
-    print('Arming')
-    drone.arm()
-    rospy.sleep(2)
+    TAKEOFF_ALTITUDE = 1.4
 
-    print('Take off and hover 1.4 m above the ground')
-    drone.navigate_wait(x=0, y=0, z=TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
+    def mission(self):
+        # Implement your mission here
+        
+        print('Arming')
+        self.drone.arm()
+        rospy.sleep(2)
 
-except KeyboardInterrupt:
-    print("Aborting")
+        print('Take off and hover 1.4 m above the ground')
+        self.drone.navigate_wait(x=0, y=0, z=self.TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
 
-except Exception as e:
-    print(f"Error: {e}")
-
-finally:
-    print('Landing')
-    drone.land_wait()
+Mission(servo=23).run()

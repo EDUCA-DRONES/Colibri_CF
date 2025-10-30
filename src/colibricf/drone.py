@@ -12,6 +12,10 @@ import numpy as np
 
 
 class DroneMode(enum.Enum):
+    '''
+    Drone flight modes.
+    '''
+
     STABILIZED = "STABILIZED"
     GUIDED = "GUIDED"
     ACRO = "ACRO"
@@ -48,6 +52,7 @@ class Drone:
         '''
         Navigate to a position with wait for completion.
         '''
+
         telemetry = self.get_telemetry(frame_id='body')
 
         self._navigate(x=x, y=y, z=z, yaw=yaw, speed=speed,
@@ -63,6 +68,7 @@ class Drone:
         '''
         Navigate to a global position with wait for completion.
         '''
+
         telemetry = self.get_telemetry(frame_id='body')
 
         self.navigate_global(lat=lat, lon=lon, z=z, yaw=yaw,
@@ -78,6 +84,7 @@ class Drone:
         '''
         Land the drone and wait until it is landed.
         '''
+
         self._land()
         while self.get_telemetry().armed:
             rospy.sleep(0.2)
@@ -86,6 +93,7 @@ class Drone:
         '''
         Wait until the drone arrives at the target position.
         '''
+
         while not rospy.is_shutdown():
             telemetry = self.get_telemetry(frame_id='navigate_target')
             if math.sqrt(telemetry.x ** 2 + telemetry.y ** 2 + telemetry.z ** 2) < tolerance:
@@ -96,12 +104,14 @@ class Drone:
         '''
         Calculate the Euclidean distance between two points in 3D space.
         '''
+
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2)
 
     def arm(self, arm: bool = True) -> None:
         '''
         Arm the drone.
         '''
+
         try:
             arm_service = rospy.ServiceProxy('mavros/cmd/arming', CommandBool)
             arm_service(arm)
@@ -109,6 +119,10 @@ class Drone:
             rospy.logerr(f"Service call failed: {e}")
 
     def is_flipped(self) -> bool:
+        '''
+        Verifies if drone is flipped.
+        '''
+
         PI_2 = math.pi / 2
         telem = self.get_telemetry()
         flipped = abs(telem.roll) > PI_2 or abs(telem.pitch) > PI_2
@@ -118,6 +132,7 @@ class Drone:
         '''
         Make the drone orbit around a point.
         '''
+
         RADIUS = radius  # m
         SPEED = speed  # rad / s
 
@@ -138,6 +153,7 @@ class Drone:
         '''
         Send a message to the drone.
         '''
+
         mavlink_pub = rospy.Publisher('mavlink/to', Mavlink, queue_size=1)
 
         # Sending a HEARTBEAT message:
@@ -152,6 +168,7 @@ class Drone:
         '''
         Set the flight mode of the drone.
         '''
+
         try:
             self._set_mode(custom_mode=mode)
         except rospy.ServiceException as e:
@@ -161,6 +178,7 @@ class Drone:
         '''
         Calibrate the drone's gyro.
         '''
+
         rospy.loginfo('Calibrate gyro')
         if not self.send_command(command=mavutil.mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, param1=1).success:
             return False
@@ -178,6 +196,7 @@ class Drone:
         '''
         Toggle the ArUco marker detection.
         '''
+
         try:
             aruco_client = dynamic_reconfigure.client.Client('aruco_detection')
             config = aruco_client.get_configuration()
@@ -192,6 +211,7 @@ class Drone:
         '''
         Toggle the optical flow detection.
         '''
+
         try:
             optical_flow_client = dynamic_reconfigure.client.Client(
                 'optical_flow')
@@ -207,6 +227,7 @@ class Drone:
         '''
         Read a parameter from flight controller.
         '''
+
         try:
             param_get = rospy.ServiceProxy('mavros/param/get', ParamGet)
             response = param_get(param_name)
@@ -223,6 +244,7 @@ class Drone:
         '''
         Write a parameter to flight controller.
         '''
+
         try:
             param_set = rospy.ServiceProxy('mavros/param/set', ParamSet)
             param_value = ParamValue(real=value)
@@ -237,9 +259,10 @@ class Drone:
             return False
 
     def haversine_distance(self, lat1, lon1, lat2, lon2, radius=6371000):
-        """
+        '''
         Calculate the distance between two points on Earth specified by latitude/longitude.
-        """
+        '''
+
         # Convert degrees to radians
         phi1, phi2 = math.radians(lat1), math.radians(lat2)
         dphi = math.radians(lat2 - lat1)
@@ -256,6 +279,7 @@ class Drone:
         '''
         Command the drone to return to its launch position after a user input.
         '''
+
         confirm = input("Return to launch position? (Y/n): ").strip().lower()
         if confirm != 'n':
             return
@@ -273,3 +297,4 @@ class Drone:
         print("Landing...")
         self.land_wait()
         print("Landed.")
+

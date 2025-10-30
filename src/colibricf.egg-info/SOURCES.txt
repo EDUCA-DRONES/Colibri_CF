@@ -1,9 +1,11 @@
+LICENSE
 README.md
 pyproject.toml
 src/colibricf/__init__.py
 src/colibricf/camera.py
 src/colibricf/drone.py
 src/colibricf/servo.py
+src/colibricf/task.py
 src/colibricf.egg-info/PKG-INFO
 src/colibricf.egg-info/SOURCES.txt
 src/colibricf.egg-info/dependency_links.txt
