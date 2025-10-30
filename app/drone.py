@@ -44,7 +44,7 @@ class Drone:
             'mavros/cmd/command', CommandLong)
         self.release = rospy.ServiceProxy('simple_offboard/release', Trigger)
 
-    def navigate_wait(self, x: float = 0.0, y: float = 0.0, z: float = 0.0, yaw: float = float('nan'), speed: float = 0.5, frame_id: str = 'body', auto_arm: bool = False) -> None:
+    def navigate_wait(self, x: float = 0.0, y: float = 0.0, z: float = 0.0, yaw: float = float('nan'), speed: float = 0.5, frame_id: str = 'body', auto_arm: bool = True) -> None:
         '''
         Navigate to a position with wait for completion.
         '''
@@ -59,7 +59,7 @@ class Drone:
                 break
             rospy.sleep(0.1)
 
-    def navigate_global_wait(self, lat: float, lon: float, z: float = 0.0, yaw: float = float('nan'), speed: float = 0.5, frame_id: str = 'body', auto_arm: bool = False) -> None:
+    def navigate_global_wait(self, lat: float, lon: float, z: float = 0.0, yaw: float = float('nan'), speed: float = 0.5, frame_id: str = 'body', auto_arm: bool = True) -> None:
         '''
         Navigate to a global position with wait for completion.
         '''
@@ -252,7 +252,7 @@ class Drone:
 
         return radius * c
 
-    def return_to_launch_confirm(self, base_lat: float, base_lon: float) -> None:
+    def return_to_launch_confirm(self, takeoff_altitude: float, base_lat: float, base_lon: float) -> None:
         '''
         Command the drone to return to its launch position after a user input.
         '''
@@ -260,6 +260,16 @@ class Drone:
         if confirm != 'n':
             return
 
+        print(f"Taking off to {takeoff_altitude}m...")
+        self.navigate_wait(z=takeoff_altitude, auto_arm=True)
+
         print("Returning to launch position...")
         self.navigate_global_wait(lat=base_lat, lon=base_lon, yaw=float(
-            "nan"), speed=5.0, frame_id="body", auto_arm=False)
+            "nan"), speed=5.0, frame_id="body", auto_arm=True)
+
+        print("Arrived at launch position.")
+        rospy.sleep(2)
+
+        print("Landing...")
+        self.land_wait()
+        print("Landed.")
