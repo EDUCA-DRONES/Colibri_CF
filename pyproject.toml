@@ -1,0 +1,22 @@
+[project]
+name = "colibricf"
+version = "0.0.12"
+description = "Code functions to control a Drone using clover"
+authors = [
+  { name="Educa Drones", email="educadrones.contato@gmail.com" },
+  { name="Bruno Rodrigues", email="brunorodriguesmtv0@gmail.com"},
+  { name="Gabriel Montalvão", email=""}
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.12"
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/EDUCA-DRONES/Colibri_CF"
+Repository = "https://github.com/EDUCA-DRONES/Colibri_CF"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
