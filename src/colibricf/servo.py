@@ -11,7 +11,7 @@ class Servo():
 
         self.pi.set_mode(self.gpio, pigpio.OUTPUT)
 
-    def pwm_neutral(self, sleep=0.5):
+    def pwm_neutral(self, sleep=0.45):
         '''
         Set servo to neutral position.
         '''
@@ -23,7 +23,7 @@ class Servo():
         except KeyboardInterrupt:
             self.pi.write(self.gpio, 0)
 
-    def pwm_high(self, sleep=0.5):
+    def pwm_high(self, sleep=0.45):
         '''
         Set servo to the highest secure pulsewidth.
         '''
@@ -35,7 +35,7 @@ class Servo():
         except KeyboardInterrupt:
             self.pi.write(self.gpio, 0)
 
-    def pwm_low(self, sleep=0.5):
+    def pwm_low(self, sleep=0.45):
         '''
         Set servo to the lowest secure pulsewidth.
         '''
@@ -47,7 +47,7 @@ class Servo():
         except KeyboardInterrupt:
             self.pi.write(self.gpio, 0)
 
-    def set_pulsewidth(self, sleep=0.5, pulsewidth=1500):
+    def set_pulsewidth(self, sleep=0.45, pulsewidth=1500):
         '''
         Set servo to any pulsewidth. Not recommended in most cases.
         '''
