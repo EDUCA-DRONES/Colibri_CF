@@ -44,22 +44,13 @@ pip3 install -e .
 ## Quick Start
 
 ```python
-from colibricf import Drone, Camera, Servo, Task
+from colibricf import Drone
 
-# Initialize drone
 drone = Drone()
-
-# Takeoff
-drone.takeoff()
-
-# Access camera
-camera = Camera()
-
-# Control servo
-servo = Servo()
-
-# Land
-drone.land()
+drone.arm()
+rospy.sleep(2)
+drone.navigate_wait(x=0, y=0, z=self.TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
+drone.land_wait()
 ```
 
 ## Project Structure
