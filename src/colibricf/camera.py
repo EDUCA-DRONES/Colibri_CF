@@ -32,7 +32,7 @@ class Camera():
             xc = x + w/2
             yc = y + h/2
             print('Found {} with data {} with center at x={}, y={}'.format(b_type, b_data, xc, yc))
-        
+
     def get_qrcode_sub(self):
         '''
         Return a qrcode reader.
