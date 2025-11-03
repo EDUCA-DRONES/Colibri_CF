@@ -14,8 +14,8 @@ class Task(ABC):
     drone = Drone()
     camera = Camera()
 
-    def __init__(self, gpio:int = -1) -> None:
-        if gpio != -1:
+    def __init__(self, gpio:(int | None) = None) -> None:
+        if gpio != None:
             self.servo = Servo(gpio)
     
     @abstractmethod
