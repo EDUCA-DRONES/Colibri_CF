@@ -2,9 +2,9 @@
 
 import rospy
 from abc import ABC, abstractmethod
-from drone import Drone
-from camera import Camera
-from servo import Servo
+from .drone import Drone
+from .camera import Camera
+from .servo import Servo
 
 class Task(ABC):
     '''
