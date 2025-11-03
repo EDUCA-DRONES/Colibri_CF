@@ -44,7 +44,7 @@ pip3 install -e .
 ## Quick Start
 
 ```python
-from colibricf import Drone
+from colibricf.drone import Drone
 
 drone = Drone()
 drone.arm()
