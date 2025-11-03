@@ -24,6 +24,26 @@ class DroneMode(enum.Enum):
     MISSION = "AUTO.MISSION"
     RTL = "RTL"
 
+class Waypoint():
+    x:float = 0
+    y:float = 0
+    z:float = 0
+
+    def __init__(self, x:float, y:float, z:float):
+        self.x = x
+        self.y = y
+        self.z = z
+
+class GlobalWaypoint():
+    lat:float
+    lon: float
+    alt: float
+
+    def __init__(self, lat:float, lon:float, alt:float):
+        self.lat = lat
+        self.lon = lon
+        self.alt = alt
+
 
 class Drone:
     def __init__(self, node_name="flight"):
@@ -275,26 +295,23 @@ class Drone:
 
         return radius * c
 
-    def return_to_launch_confirm(self, takeoff_altitude: float, base_lat: float, base_lon: float) -> None:
+    def waypoint_navigate(self, waypoints: list[Waypoint]):
         '''
-        Command the drone to return to its launch position after a user input.
+        Flight through the defined waypoints.
         '''
 
-        confirm = input("Return to launch position? (Y/n): ").strip().lower()
-        if confirm != 'n':
-            return
+        for i, wp in enumerate(waypoints):
+            print(f"note: navigating to waypoint {i+1}: ({wp.x}, {wp.y}, {wp.z})")
+            self.navigate_wait(x=wp.x, y=wp.y, z=wp.z, speed=0.5)
+            rospy.sleep(0.5)  # Pause at waypoint
 
-        print(f"Taking off to {takeoff_altitude}m...")
-        self.navigate_wait(z=takeoff_altitude, auto_arm=True)
+    def global_waypoint_navigate(self, waypoints: list[GlobalWaypoint]):
+        '''
+        Flight through the defined global waypoints.
+        '''
 
-        print("Returning to launch position...")
-        self.navigate_global_wait(lat=base_lat, lon=base_lon, yaw=float(
-            "nan"), speed=5.0, frame_id="body", auto_arm=True)
-
-        print("Arrived at launch position.")
-        rospy.sleep(2)
-
-        print("Landing...")
-        self.land_wait()
-        print("Landed.")
+        for i, wp in enumerate(waypoints):
+            print(f"Moving to waypoint {i+1}: ({wp.lat}, {wp.lon}, {wp.alt})")
+            self.navigate_global_wait(lat=wp.lat, lon=wp.lon, z=wp.alt, speed=0.5)
+            rospy.sleep(0.5)  # Pause at waypoint
 
