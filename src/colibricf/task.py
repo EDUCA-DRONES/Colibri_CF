@@ -14,8 +14,9 @@ class Task(ABC):
     drone = Drone()
     camera = Camera()
 
-    def __init__(self, servo:int = 14):
-        self.servo = Servo(servo)
+    def __init__(self, gpio:int = -1) -> None:
+        if gpio != -1:
+            self.servo = Servo(gpio)
     
     @abstractmethod
     def mission(self):
@@ -30,13 +31,13 @@ class Task(ABC):
             self.mission()
 
         except KeyboardInterrupt:
-            print("Aborting")
+            print("warning: aborting task")
 
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"ERROR: {e}")
 
         finally:
-            print('Landing')
+            print('note: landing')
             self.drone.land_wait()
 
     def return_to_launch_confim(self):
