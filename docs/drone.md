@@ -9,7 +9,7 @@ The Drone module is the core component for autonomous flight operations. It hand
 ## Initialization
 
 ```python
-from colibricf import Drone
+from colibricf.drone import Drone
 
 # Initialize the drone
 drone = Drone(node_name="flight")
@@ -24,7 +24,7 @@ drone = Drone(node_name="flight")
 The `DroneMode` enum defines available flight modes:
 
 ```python
-from colibricf import DroneMode
+from colibricf.drone import DroneMode
 
 class DroneMode(enum.Enum):
     STABILIZED = "STABILIZED"      # Manual stabilized flight
@@ -335,7 +335,7 @@ drone.return_to_launch_confirm(
 ## Complete Example
 
 ```python
-from colibricf import Drone
+from colibricf.drone import Drone
 import rospy
 
 # Initialize drone
@@ -347,7 +347,7 @@ print(f"Battery: {telemetry.battery_voltage:.1f}V")
 
 # Arm and takeoff
 drone.arm()
-rospy.sleep(1)
+rospy.sleep(3)
 drone.navigate_wait(z=1.5, auto_arm=True)
 
 # Move forward

@@ -9,7 +9,7 @@ The Servo module uses PiGPIO (pigpio) to generate PWM (Pulse Width Modulation) s
 ## Initialization
 
 ```python
-from colibricf import Servo
+from colibricf.servo import Servo
 
 # Initialize servo on GPIO pin 14
 servo = Servo(gpio=14)
@@ -29,7 +29,7 @@ Consult your specific hardware documentation for available pins.
 ### Error Handling
 
 ```python
-from colibricf import Servo
+from colibricf.servo import Servo
 
 try:
     servo = Servo(gpio=14)
@@ -125,32 +125,10 @@ servo.set_pulsewidth(pulsewidth=2400)  # May strain servo
 
 ## Complete Examples
 
-### Camera Gimbal Control
-
-```python
-from colibricf import Servo, Drone
-import time
-
-# Initialize servo for camera gimbal on pin 17
-gimbal = Servo(gpio=17)
-
-# Look down
-gimbal.pwm_high(sleep=1.0)
-time.sleep(1)
-
-# Look straight
-gimbal.pwm_neutral(sleep=1.0)
-time.sleep(1)
-
-# Look up
-gimbal.pwm_low(sleep=1.0)
-time.sleep(1)
-```
-
 ### Multi-Servo Control
 
 ```python
-from colibricf import Servo
+from colibricf.servo import Servo
 import time
 
 # Multiple servos on different pins
@@ -171,7 +149,7 @@ servo2.pwm_neutral(sleep=1.0)
 ### Smooth Sweep Movement
 
 ```python
-from colibricf import Servo
+from colibricf.servo import Servo
 import time
 
 servo = Servo(gpio=14)
@@ -186,7 +164,7 @@ print("Sweep complete")
 ### Payload Release Mechanism
 
 ```python
-from colibricf import Servo
+from colibricf.servo import Servo
 import time
 
 # Servo controlling cargo release mechanism
@@ -206,85 +184,12 @@ time.sleep(2)
 release_servo.pwm_neutral(sleep=0.5)
 ```
 
-### Servo Sweep Test
-
-```python
-from colibricf import Servo
-import time
-
-def test_servo(gpio_pin):
-    """Test servo movement at a specific GPIO pin"""
-    servo = Servo(gpio=gpio_pin)
-    
-    print(f"Testing servo on GPIO {gpio_pin}")
-    
-    positions = [
-        ("Low", "pwm_low"),
-        ("Neutral", "pwm_neutral"),
-        ("High", "pwm_high")
-    ]
-    
-    for name, method in positions:
-        print(f"  Moving to {name}...")
-        getattr(servo, method)(sleep=1.0)
-        time.sleep(0.5)
-    
-    print(f"Test complete for GPIO {gpio_pin}")
-
-# Test multiple servos
-for pin in [14, 15, 17]:
-    test_servo(pin)
-    print()
-```
-
-## Integration with Drone Tasks
-
-```python
-from colibricf import Task, Servo
-import time
-
-class GimbalControlTask(Task):
-    """A task that demonstrates gimbal control"""
-    
-    def __init__(self, servo_pin=17):
-        super().__init__(servo=servo_pin)
-    
-    def mission(self):
-        print("Starting gimbal control mission")
-        
-        # Arm and takeoff
-        self.drone.arm()
-        time.sleep(1)
-        self.drone.navigate_wait(z=1.0, auto_arm=True)
-        
-        # Move servo while hovering
-        print("Tilting camera down")
-        self.servo.pwm_high(sleep=1.0)
-        time.sleep(2)
-        
-        print("Tilting camera up")
-        self.servo.pwm_low(sleep=1.0)
-        time.sleep(2)
-        
-        print("Centering camera")
-        self.servo.pwm_neutral(sleep=1.0)
-        
-        # Return and land
-        print("Returning to start")
-        self.drone.navigate_wait(x=0, y=0, z=1.0)
-        time.sleep(1)
-
-# Run the task
-task = GimbalControlTask(servo_pin=17)
-task.run()
-```
-
 ## Troubleshooting
 
 ### Servo Not Responding
 
 ```python
-from colibricf import Servo
+from colibricf.servo import Servo
 
 try:
     servo = Servo(gpio=14)

@@ -13,7 +13,7 @@ The Task class follows the Abstract Base Class (ABC) pattern, requiring develope
 ### Class Structure
 
 ```python
-from colibricf import Task
+from colibricf.task import Task
 from abc import abstractmethod
 
 class Task(ABC):
@@ -22,9 +22,11 @@ class Task(ABC):
     drone = Drone()          # Shared drone instance
     camera = Camera()        # Shared camera instance
     
-    def __init__(self, servo=14):
+    def __init__(self, gpio:int = -1):
         """Initialize with servo GPIO pin"""
-        self.servo = Servo(servo)
+
+        if gpio != -1:
+          self.servo = Servo(gpio)
     
     @abstractmethod
     def mission(self):
@@ -49,8 +51,8 @@ class Task(ABC):
 ### Basic Task Implementation
 
 ```python
-from colibricf import Task
-import time
+from colibricf.task import Task
+import rospy
 
 class SimpleFlyTask(Task):
     """A simple task that takes off and lands"""
@@ -60,11 +62,11 @@ class SimpleFlyTask(Task):
         
         # Take off
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(3)
         self.drone.navigate_wait(z=1.0, auto_arm=True)
         
         print("Hovering at 1 meter")
-        time.sleep(3)
+        rospy.sleep(3)
         
         print("Mission complete!")
 
@@ -76,26 +78,26 @@ task.run()
 ### Task with Servo Control
 
 ```python
-from colibricf import Task
-import time
+from colibricf.task import Task
+import rospy
 
-class GimbalTestTask(Task):
-    """A task that controls servo gimbal"""
+class ServoTestTask(Task):
+    """A task that controls servo motor"""
     
     def mission(self):
-        print("Starting gimbal test task")
+        print("Starting servo test task")
         
         # Take off
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(3)
         self.drone.navigate_wait(z=1.0, auto_arm=True)
         
-        # Control gimbal
-        print("Moving gimbal...")
+        # Control servo
+        print("Moving servo...")
         self.servo.pwm_low(sleep=1.0)
-        time.sleep(1)
+        rospy.sleep(1)
         self.servo.pwm_neutral(sleep=1.0)
-        time.sleep(1)
+        rospy.sleep(1)
         self.servo.pwm_high(sleep=1.0)
         
         print("Mission complete!")
@@ -108,9 +110,9 @@ task.run()
 ### Task with Camera Operations
 
 ```python
-from colibricf import Task
+from colibricf.task.servo import Task
 import cv2
-import time
+import rospy
 
 class PhotographyTask(Task):
     """A task that captures photos during flight"""
@@ -120,7 +122,7 @@ class PhotographyTask(Task):
         
         # Take off
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(3)
         self.drone.navigate_wait(z=1.0, auto_arm=True)
         
         # Move to waypoint
@@ -180,8 +182,8 @@ task.run()
 ### Multi-Waypoint Mission
 
 ```python
-from colibricf import Task
-import time
+from colibricf.task import Task
+import rospy
 
 class WaypointMissionTask(Task):
     """A task that visits multiple waypoints"""
@@ -201,14 +203,14 @@ class WaypointMissionTask(Task):
         
         # Arm and takeoff
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(3)
         self.drone.navigate_wait(z=1.0, auto_arm=True)
         
         # Visit all waypoints
         for i, (x, y, z) in enumerate(self.waypoints):
             print(f"Moving to waypoint {i+1}: ({x}, {y}, {z})")
             self.drone.navigate_wait(x=x, y=y, z=z, speed=0.5)
-            time.sleep(1)  # Pause at waypoint
+            rospy.sleep(1)  # Pause at waypoint
         
         print("All waypoints visited!")
 
@@ -220,9 +222,9 @@ task.run()
 ### Surveying / Grid Mission
 
 ```python
-from colibricf import Task
+from colibricf.task import Task
 import cv2
-import time
+import rospy
 
 class SurveyMissionTask(Task):
     """A task that surveys an area in a grid pattern"""
@@ -237,7 +239,7 @@ class SurveyMissionTask(Task):
         
         # Arm and takeoff
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(3)
         self.drone.navigate_wait(z=2.0, auto_arm=True)
         
         # Generate grid waypoints
@@ -257,7 +259,7 @@ class SurveyMissionTask(Task):
             frame = self.camera.retrieve_cv_frame()
             cv2.imwrite(f'survey_{idx:03d}.jpg', frame)
             
-            time.sleep(0.5)
+            rospy.sleep(0.5)
         
         print("Survey complete!")
 
@@ -269,8 +271,8 @@ task.run()
 ### QR Code Detection Mission
 
 ```python
-from colibricf import Task
-import time
+from colibricf.task import Task
+import rospy
 
 class QRCodeSearchTask(Task):
     """A task that searches for QR codes"""
@@ -283,7 +285,7 @@ class QRCodeSearchTask(Task):
         
         # Arm and takeoff
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(3)
         self.drone.navigate_wait(z=1.0, auto_arm=True)
         
         # Search pattern
@@ -297,7 +299,7 @@ class QRCodeSearchTask(Task):
         for i, (x, y) in enumerate(search_points):
             print(f"Checking point {i+1}/{len(search_points)}")
             self.drone.navigate_wait(x=x, y=y, z=1.0, speed=0.5)
-            time.sleep(2)  # Allow time to detect QR code
+            rospy.sleep(2)  # Allow rospy to detect QR code
         
         print("Search complete!")
 
@@ -331,7 +333,7 @@ task.servo.pwm_neutral()
 ### Automatic Error Recovery
 
 ```python
-from colibricf import Task
+from colibricf.task import Task
 
 class ErrorHandlingTask(Task):
     """Demonstrates error handling"""
@@ -339,7 +341,7 @@ class ErrorHandlingTask(Task):
     def mission(self):
         try:
             self.drone.arm()
-            time.sleep(1)
+            rospy.sleep(1)
             self.drone.navigate_wait(z=1.0, auto_arm=True)
             
             # If error occurs here...
@@ -360,7 +362,7 @@ task.run()
 ### Handling Keyboard Interrupt
 
 ```python
-# User can press Ctrl+C anytime during execution
+# User can press Ctrl+C anyrospy during execution
 # run() catches it and lands the drone safely
 
 # Example: 
@@ -377,8 +379,8 @@ task.run()
 ### Perimeter Patrol Task
 
 ```python
-from colibricf import Task
-import time
+from colibricf.task import Task
+import rospy
 
 class PerimeterPatrolTask(Task):
     """Patrol the perimeter of a square area"""
@@ -392,7 +394,7 @@ class PerimeterPatrolTask(Task):
         
         # Takeoff
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(1)
         self.drone.navigate_wait(z=1.0, auto_arm=True)
         
         # Patrol points (square perimeter)
@@ -409,7 +411,7 @@ class PerimeterPatrolTask(Task):
         for point in patrol_points:
             print(f"Patrol point: {point}")
             self.drone.navigate_wait(x=point[0], y=point[1], z=1.0)
-            time.sleep(1)
+            rospy.sleep(1)
         
         print("Patrol complete!")
 
@@ -421,9 +423,9 @@ task.run()
 ### Orbit and Capture Task
 
 ```python
-from colibricf import Task
+from colibricf.task import Task
 import cv2
-import time
+import rospy
 
 class OrbitCaptureTask(Task):
     """Orbit a point and capture images"""
@@ -433,16 +435,16 @@ class OrbitCaptureTask(Task):
         
         # Takeoff and position
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(1)
         self.drone.navigate_wait(z=1.0, auto_arm=True)
         
         # Orbit while capturing
         print("Starting orbit...")
-        start_time = time.time()
+        start_rospy = rospy.rospy()
         orbit_duration = 10.0  # seconds
         
         frame_count = 0
-        while time.time() - start_time < orbit_duration:
+        while rospy.rospy() - start_rospy < orbit_duration:
             self.drone.orbit(radius=1.0, speed=0.5)
             
             # Capture every 2 seconds
@@ -451,7 +453,7 @@ class OrbitCaptureTask(Task):
                 cv2.imwrite(f'orbit_{frame_count}.jpg', frame)
             
             frame_count += 1
-            time.sleep(0.1)
+            rospy.sleep(0.1)
         
         print("Orbit complete!")
 
@@ -465,16 +467,16 @@ task.run()
 1. **Always initialize properly**: Call `super().__init__()` in your task
 2. **Use meaningful names**: Task class names should describe the mission
 3. **Add logging**: Use `print()` for progress updates
-4. **Handle timing**: Use `time.sleep()` to allow operations to complete
+4. **Handle timing**: Use `rospy.sleep()` to allow operations to complete
 5. **Test incrementally**: Test each part of the mission separately first
-6. **Add safety timeouts**: Prevent infinite loops
+6. **Add safety rospyouts**: Prevent infinite loops
 7. **Document waypoints**: Comment your flight paths
 
 ## Debugging Tasks
 
 ```python
-from colibricf import Task
-import time
+from colibricf.task import Task
+import rospy
 
 class DebugTask(Task):
     """Task with debugging output"""
@@ -488,7 +490,7 @@ class DebugTask(Task):
         
         # Execute mission
         self.drone.arm()
-        time.sleep(1)
+        rospy.sleep(1)
         
         # Print telemetry after
         telem = self.drone.get_telemetry()
