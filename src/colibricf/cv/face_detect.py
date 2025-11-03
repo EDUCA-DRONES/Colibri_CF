@@ -24,21 +24,18 @@ while True:
     frame = cv.flip(frame, 1)
     
     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    
+
     face_rect = detectFace(gray)
     body_rect = detectUpperBody(gray)
     eye_rect = detectEye(gray)
-    
+
     for (x, y, w, h) in face_rect:
         cv.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), thickness=2)
         cv.putText(frame, f'face ({x},{y})', (x , y - 20), cv.FONT_HERSHEY_PLAIN, 1.1, (0, 255, 0), 2)
-        
     
     for (x, y, w, h) in body_rect:
         cv.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), thickness=2)
         cv.putText(frame, f'body ({x},{y})', (x , y - 20), cv.FONT_HERSHEY_PLAIN, 1.1, (0, 0, 255), 2)
-        
-    
     
     for (x, y, w, h) in eye_rect:
         cv.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), thickness=2)
