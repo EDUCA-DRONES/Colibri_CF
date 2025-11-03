@@ -9,7 +9,7 @@ The Camera module enables real-time image processing directly on the drone, incl
 ## Initialization
 
 ```python
-from colibricf import Camera
+from colibricf.camera import Camera
 
 # Initialize the camera
 camera = Camera()
@@ -25,7 +25,7 @@ Capture a single frame from the drone's main camera.
 
 ```python
 import cv2
-from colibricf import Camera
+from colibricf.camera import Camera
 
 camera = Camera()
 
@@ -66,7 +66,7 @@ print(f"Data type: {frame.dtype}")
 Start a subscriber that continuously processes frames for QR codes.
 
 ```python
-from colibricf import Camera
+from colibricf.camera import Camera
 
 camera = Camera()
 
@@ -98,7 +98,7 @@ The QR code detector automatically processes incoming frames and prints informat
 ### Complete QR Code Example
 
 ```python
-from colibricf import Camera
+from colibricf.camera import Camera
 import rospy
 
 camera = Camera()
@@ -119,7 +119,7 @@ except KeyboardInterrupt:
 
 ```python
 import cv2
-from colibricf import Camera
+from colibricf.camera import Camera
 
 camera = Camera()
 frame = camera.retrieve_cv_frame()
@@ -135,7 +135,7 @@ cv2.waitKey(0)
 
 ```python
 import cv2
-from colibricf import Camera
+from colibricf.camera import Camera
 
 camera = Camera()
 
@@ -163,7 +163,7 @@ cv2.waitKey(0)
 ```python
 import cv2
 import numpy as np
-from colibricf import Camera
+from colibricf.camera import Camera
 
 camera = Camera()
 frame = camera.retrieve_cv_frame()
@@ -189,7 +189,7 @@ cv2.waitKey(0)
 
 ```python
 import cv2
-from colibricf import Camera
+from colibricf.camera import Camera
 
 camera = Camera()
 frame = camera.retrieve_cv_frame()
@@ -216,7 +216,7 @@ cv2.waitKey(0)
 ```python
 import cv2
 import rospy
-from colibricf import Camera
+from colibricf.camera import Camera
 
 camera = Camera()
 
@@ -245,7 +245,8 @@ cv2.destroyAllWindows()
 
 ```python
 import cv2
-from colibricf import Camera, Drone
+from colibricf.camera import Camera
+from colibricf.drone import Drone
 
 camera = Camera()
 drone = Drone()
