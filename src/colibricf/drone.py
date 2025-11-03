@@ -295,17 +295,17 @@ class Drone:
 
         return radius * c
 
-    def waypoint_navigate(self, waypoints: list[Waypoint]):
+    def waypoint_navigate(self, waypoints: list):
         '''
         Flight through the defined waypoints.
         '''
 
-        for i, wp in enumerate(waypoints):
-            print(f"note: navigating to waypoint {i+1}: ({wp.x}, {wp.y}, {wp.z})")
+        for wp in waypoints:
+            print(f"note: navigating to waypoint: ({wp.x}, {wp.y}, {wp.z})")
             self.navigate_wait(x=wp.x, y=wp.y, z=wp.z, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
 
-    def global_waypoint_navigate(self, waypoints: list[GlobalWaypoint]):
+    def global_waypoint_navigate(self, waypoints: list):
         '''
         Flight through the defined global waypoints.
         '''

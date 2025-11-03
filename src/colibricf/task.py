@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from .drone import Drone, DroneMode
 from .camera import Camera
 from .servo import Servo
+from typing import Union
 
 class Task(ABC):
     '''
@@ -13,7 +14,7 @@ class Task(ABC):
 
     RTL_ALTITUDE = 10
 
-    def __init__(self, gpio:(int | None) = None) -> None:
+    def __init__(self, gpio: Union[int, None] = None) -> None:
         if gpio != None:
             self.servo = Servo(gpio)
 
