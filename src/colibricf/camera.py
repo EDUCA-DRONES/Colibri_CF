@@ -7,7 +7,6 @@ from clover import long_callback
 
 class Camera():
     def __init__(self):
-        rospy.init_node('cv')
         self.bridge = CvBridge()
 
     def retrieve_cv_frame(self):
