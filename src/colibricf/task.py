@@ -2,7 +2,7 @@
 
 import rospy
 from abc import ABC, abstractmethod
-from .drone import Drone
+from .drone import Drone, DroneMode
 from .camera import Camera
 from .servo import Servo
 
@@ -11,12 +11,15 @@ class Task(ABC):
     An abstract class to write mission.
     '''
 
-    drone = Drone()
-    camera = Camera()
+    RTL_ALTITUDE = 10
 
     def __init__(self, gpio:(int | None) = None) -> None:
         if gpio != None:
             self.servo = Servo(gpio)
+
+        self.drone = Drone()
+        self.camera = Camera()
+
     
     @abstractmethod
     def mission(self):
@@ -44,8 +47,9 @@ class Task(ABC):
         '''
         Use if you need to confirm the return.
         '''
-
-        pass
+        confirm = input("Return to launch position? (Y/n): ").strip().lower()
+        if confirm == 'y':
+            self.drone.set_mode(DroneMode.RTL)
 
     def change_servo_pin(self, gpio:int):
         '''
