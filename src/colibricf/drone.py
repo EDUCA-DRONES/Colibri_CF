@@ -1,14 +1,15 @@
 import rospy
 import enum
 import math
+import numpy as np
 import dynamic_reconfigure.client
+from typing import List
 from clover import srv
 from pymavlink import mavutil
 from std_srvs.srv import Trigger
 from mavros import mavlink
 from mavros_msgs.srv import CommandBool, SetMode, ParamGet, ParamSet, CommandLong
 from mavros_msgs.msg import State, ParamValue, Mavlink
-import numpy as np
 
 
 class DroneMode(enum.Enum):
@@ -295,7 +296,7 @@ class Drone:
 
         return radius * c
 
-    def waypoint_navigate(self, waypoints: list):
+    def waypoint_navigate(self, waypoints: List[Waypoint]):
         '''
         Flight through the defined waypoints.
         '''
@@ -305,7 +306,7 @@ class Drone:
             self.navigate_wait(x=wp.x, y=wp.y, z=wp.z, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
 
-    def global_waypoint_navigate(self, waypoints: list):
+    def global_waypoint_navigate(self, waypoints: List[GlobalWaypoint]):
         '''
         Flight through the defined global waypoints.
         '''
