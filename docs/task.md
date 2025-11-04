@@ -15,6 +15,7 @@ The Task class follows the Abstract Base Class (ABC) pattern, requiring develope
 ```python
 from colibricf.task import Task
 from abc import abstractmethod
+from typing import Union
 
 class Task(ABC):
     """Base class for all drone missions"""
@@ -22,10 +23,10 @@ class Task(ABC):
     drone = Drone()          # Shared drone instance
     camera = Camera()        # Shared camera instance
     
-    def __init__(self, gpio:int = -1):
+    def __init__(self, gpio: Union[int, None]= None):
         """Initialize with servo GPIO pin"""
 
-        if gpio != -1:
+        if gpio != None:
           self.servo = Servo(gpio)
     
     @abstractmethod

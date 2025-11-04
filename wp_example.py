@@ -3,8 +3,9 @@
 
 import rospy
 from colibricf.task import Task
+from colibricf.drone import Waypoint
 
-class Mission(Task):
+class WaypointMission(Task):
     '''
     Example of implementation. 
     '''
@@ -12,14 +13,20 @@ class Mission(Task):
     TAKEOFF_ALTITUDE = 1.4
 
     def mission(self):
-        # Implement your mission here
-        
+        waypoints = [
+            Waypoint(0, 2, 0),
+            Waypoint(2, 0, 0),
+            Waypoint(0, -2, 0),
+            Waypoint(-2, 0, 0),
+        ]
+
         print('note: arming')
         self.drone.arm()
         rospy.sleep(2)
 
-        print('Take off and hover 1.4 m above the ground')
+        print('note: taking off')
         self.drone.navigate_wait(x=0, y=0, z=self.TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
 
-Mission().run()
+        self.drone.waypoint_navigate(waypoints)
 
+WaypointMission().run()
