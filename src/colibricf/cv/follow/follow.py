@@ -8,7 +8,7 @@ from ..utils import draw_landmarks_on_image
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from clover import long_callback
-from .handler import centralize_in_target, handle_move
+from ...drone import Drone
 
 import rospy
 import os
@@ -19,7 +19,6 @@ BaseOptions = mp.tasks.BaseOptions
 PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
 detection_results = None
-drone = Drone()
 bridge = CvBridge()
 
 def result_callback(result, output_image, timestamp_ms):
@@ -42,7 +41,6 @@ def set_target_size(result, h):
         return None
     return (y1 - y0) * h
 
-
 @long_callback
 def _follow_callback(data):
     frame = bridge.imgmsg_to_cv2(data,'bgr8')
@@ -61,8 +59,8 @@ def _follow_callback(data):
 
         if target_size is not None:
             landmark0 = detection_results.pose_landmarks[0][0]
-            centralize_in_target(drone, center, landmark0, w)
-            handle_move(drone, target_size)
+            Drone().centralize_in_target(center, landmark0, w)
+            Drone().handle_move(target_size)
 
         annotated_frame= draw_landmarks_on_image(frame, detection_results)
         frame = cv.cvtColor(annotated_image, cv.COLOR_RGB2BGR)

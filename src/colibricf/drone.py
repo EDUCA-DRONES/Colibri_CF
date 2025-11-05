@@ -10,7 +10,6 @@ from std_srvs.srv import Trigger
 from mavros import mavlink
 from mavros_msgs.srv import CommandBool, SetMode, ParamGet, ParamSet, CommandLong
 from mavros_msgs.msg import State, ParamValue, Mavlink
-from .cv.follow.follow import _follow_callback
 
 class DroneMode(enum.Enum):
     '''
@@ -316,7 +315,26 @@ class Drone:
             self.navigate_global_wait(lat=wp.lat, lon=wp.lon, z=wp.alt, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
 
+    def centralize_in_target(center: float, landmark0, w):
+        pos = landmark0.x * w
+        if center - 100 <= pos <= center + 100:
+            self.set_yaw(yaw=radians(0), frame_id='body')
+        elif pos > center + 100:
+            self.set_yaw(yaw=radians(5), frame_id='body')
+        elif pos < center - 100:
+            self.set_yaw(yaw=radians(-5), frame_id='body')
+
+    def follow_handle_move(target_size: float):
+        if 250 <= target_size <= 340:
+            pass
+            # drone.navigate_wait(x=0, y=0, z=0.0, frame_id='body', speed=0.5, auto_arm=True)
+        elif target_size < 250:
+            self.navigate_wait(x=0.1, y=0.0, z=0.0, frame_id='body', speed=0.5, auto_arm=True)
+        elif target_size > 340:
+            self.navigate_wait(x=-0.1, y=0, z=0, frame_id='body', speed=0.5, auto_arm=True)
+
     def follow(self):
+        from .cv.follow.follow import _follow_callback
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
         rospy.spin()
 
