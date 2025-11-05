@@ -59,6 +59,7 @@ ENV/
 # IDE/editor configs
 .idea/
 .vscode/
+.lazy.lua
 *.swp
 *.swo
 
