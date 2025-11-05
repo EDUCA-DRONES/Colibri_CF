@@ -60,7 +60,7 @@ def _follow_callback(data):
         if target_size is not None:
             landmark0 = detection_results.pose_landmarks[0][0]
             Drone().centralize_in_target(center, landmark0, w)
-            Drone().handle_move(target_size)
+            Drone().follow_handle_move(target_size)
 
         annotated_frame= draw_landmarks_on_image(frame, detection_results)
         frame = cv.cvtColor(annotated_frame, cv.COLOR_RGB2BGR)
