@@ -1,4 +1,3 @@
-from cv2.gapi.streaming import timestamp
 import rospy
 import piexif
 import cv2
