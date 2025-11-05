@@ -334,7 +334,7 @@ class Drone:
             self.navigate_wait(x=-0.1, y=0, z=0, frame_id='body', speed=0.5, auto_arm=True)
 
     def follow(self):
-        from .cv.follow.follow import _follow_callback
+        from .cv.follow import _follow_callback
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
         rospy.spin()
 

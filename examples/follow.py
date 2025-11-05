@@ -12,7 +12,8 @@ class Follow(Task):
         self.drone.arm()
         rospy.sleep(3)
 
-        self.drone.navigate_wait(z=TAKEOFF_ALTITUDE, auto_arm=True)
+        self.drone.navigate_wait(z=self.TAKEOFF_ALTITUDE, auto_arm=True)
 
         self.drone.follow()
 
+Follow().run()
