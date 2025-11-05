@@ -4,11 +4,11 @@ import cv2 as cv
 import numpy as np
 import mediapipe as mp
 from mediapipe.tasks.python import vision
-from ..utils import draw_landmarks_on_image
+from .utils import draw_landmarks_on_image
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from clover import long_callback
-from ...drone import Drone
+from ..drone import Drone
 
 import rospy
 import os

@@ -7,6 +7,7 @@ from typing import List
 from clover import srv
 from pymavlink import mavutil
 from std_srvs.srv import Trigger
+from sensor_msgs.msg import Image
 from mavros import mavlink
 from mavros_msgs.srv import CommandBool, SetMode, ParamGet, ParamSet, CommandLong
 from mavros_msgs.msg import State, ParamValue, Mavlink
