@@ -34,5 +34,5 @@ def _draw_face_callback(data):
 
     resized = utils.resize(frame)
 
-    image_pub = rospy.Publisher('~face_detect', Image)
+    image_pub = rospy.Publisher('~face_detect', Image, queue_size=1)
     image_pub.publish(bridge.cv2_to_imgmsg(resized, 'bgr8'))
