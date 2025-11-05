@@ -6,7 +6,6 @@ from cv_bridge import CvBridge
 from clover import long_callback
 import os
 
-bridge = CvBridge()
 
 def detectFace(frame):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -17,11 +16,12 @@ def detectFace(frame):
     return matrix
 
 @long_callback
-def draw_face(data):
+def _draw_face_callback(data):
     '''
     Draw a face in image and publish
     '''
 
+    bridge = CvBridge()
     frame = bridge.imgmsg_to_cv2(data, 'bgr8')
     frame = cv2.flip(frame, 1)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -34,5 +34,5 @@ def draw_face(data):
 
     resized = utils.resize(frame)
 
-    image_pub = rospy.Publisher('~debug', Image)
+    image_pub = rospy.Publisher('~face_detect', Image)
     image_pub.publish(bridge.cv2_to_imgmsg(resized, 'bgr8'))

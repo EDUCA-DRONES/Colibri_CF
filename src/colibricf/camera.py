@@ -3,13 +3,12 @@ import rospy
 import piexif
 import cv2
 import os
-from .cv.face_detect import draw_face
+from cv.face_detect import _draw_face_callback
+from cv.qrcode import _qrcode_callback
 from datetime import datetime
-from pyzbar import pyzbar
 from clover import srv
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
-from clover import long_callback
 from fractions import Fraction
 
 class Camera():
@@ -23,28 +22,12 @@ class Camera():
 
         return self.bridge.imgmsg_to_cv2(rospy.wait_for_message('main_camera/image_raw_throttled', Image), 'bgr8')
 
-    @long_callback
-    def _qrcode_callback(self, msg):
-        '''
-        Read a qrcode
-        '''
-
-        img = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
-        barcodes = pyzbar.decode(img)
-        for barcode in barcodes:
-            b_data = barcode.data.decode('utf-8')
-            b_type = barcode.type
-            (x, y, w, h) = barcode.rect
-            xc = x + w/2
-            yc = y + h/2
-            print('Found {} with data {} with center at x={}, y={}'.format(b_type, b_data, xc, yc))
-
-    def get_qrcode_sub(self) -> None:
+    def read_qrcode(self) -> None:
         '''
         Return a qrcode reader.
         '''
 
-        rospy.Subscriber('main_camera/image_raw_throttled', Image, self._qrcode_callback, queue_size=1)
+        rospy.Subscriber('main_camera/image_raw_throttled', Image, _qrcode_callback, queue_size=1)
         rospy.spin()
 
     def save_image(self, path:str):
@@ -83,7 +66,7 @@ class Camera():
         Detect face in an image and publish in a ros node
         '''
 
-        rospy.Subscriber('main_camera/image_raw_throttled', Image, draw_face, queue_size=1)
+        rospy.Subscriber('main_camera/image_raw_throttled', Image, _draw_face_callback, queue_size=1)
         rospy.spin()
 
 
