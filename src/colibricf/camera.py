@@ -3,8 +3,8 @@ import rospy
 import piexif
 import cv2
 import os
-from cv.face_detect import _draw_face_callback
-from cv.qrcode import _qrcode_callback
+from .cv.face_detect import _draw_face_callback
+from .cv.qrcode import _qrcode_callback
 from datetime import datetime
 from clover import srv
 from cv_bridge import CvBridge
