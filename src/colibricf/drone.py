@@ -325,7 +325,7 @@ class Drone:
         elif pos < center - 100:
             self.set_yaw(yaw=radians(-5), frame_id='body')
 
-    def follow_handle_move(target_size: float):
+    def follow_handle_move(self, target_size: float):
         if 250 <= target_size <= 340:
             pass
             # drone.navigate_wait(x=0, y=0, z=0.0, frame_id='body', speed=0.5, auto_arm=True)
