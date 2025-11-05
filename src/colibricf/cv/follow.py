@@ -63,6 +63,6 @@ def _follow_callback(data):
             Drone().handle_move(target_size)
 
         annotated_frame= draw_landmarks_on_image(frame, detection_results)
-        frame = cv.cvtColor(annotated_image, cv.COLOR_RGB2BGR)
+        frame = cv.cvtColor(annotated_frame, cv.COLOR_RGB2BGR)
 
     image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
