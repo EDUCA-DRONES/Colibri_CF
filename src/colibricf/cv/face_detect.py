@@ -8,10 +8,6 @@ import os
 
 
 def detectFace(frame):
-    '''
-    Detect face using haar_cascade method and return a matrix
-    '''
-
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     cascade_path = os.path.join(BASE_DIR, 'haar_cascade', 'haar_cascade.xml')
 
@@ -38,5 +34,5 @@ def _draw_face_callback(data):
 
     resized = utils.resize(frame)
 
-    image_pub = rospy.Publisher('~face_detect/debug', Image)
+    image_pub = rospy.Publisher('~face_detect', Image)
     image_pub.publish(bridge.cv2_to_imgmsg(resized, 'bgr8'))

@@ -21,6 +21,7 @@ class Task(ABC):
         self.drone = Drone()
         self.camera = Camera()
 
+    
     @abstractmethod
     def mission(self):
         raise Exception("Need implementation.")
