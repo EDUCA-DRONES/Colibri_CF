@@ -29,6 +29,7 @@ options = PoseLandmarkerOptions(
     min_pose_detection_confidence=0.65, result_callback=result_callback)
 
 landmarker = mp.tasks.vision.PoseLandmarker.create_from_options(options)
+image_pub = rospy.Publisher('~follow/debug', Image, queue_size=1)
 
 def set_target_size(result, h):
     try:
@@ -42,7 +43,6 @@ def set_target_size(result, h):
 @long_callback
 def _follow_callback(data):
     frame = bridge.imgmsg_to_cv2(data,'bgr8')
-    image_pub = rospy.Publisher('~follow/debug', Image, queue_size=1)
 
     frame = cv.flip(frame, 1)
 
