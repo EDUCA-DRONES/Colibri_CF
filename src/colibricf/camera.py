@@ -68,4 +68,3 @@ class Camera():
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _draw_face_callback, queue_size=1)
         rospy.spin()
 
-
