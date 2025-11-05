@@ -2,7 +2,6 @@ import time
 from math import trunc
 import cv2 as cv
 import mediapipe as mp
-from mediapipe.tasks.python import vision
 from .utils import draw_landmarks_on_image
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
