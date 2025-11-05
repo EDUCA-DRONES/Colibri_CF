@@ -316,7 +316,7 @@ class Drone:
             self.navigate_global_wait(lat=wp.lat, lon=wp.lon, z=wp.alt, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
 
-    def centralize_in_target(center: float, landmark0, w):
+    def centralize_in_target(self, center: float, landmark0, w):
         pos = landmark0.x * w
         if center - 100 <= pos <= center + 100:
             self.set_yaw(yaw=radians(0), frame_id='body')
