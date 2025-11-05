@@ -1,6 +1,6 @@
 import cv2
 import rospy
-import utils
+from . import utils
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from clover import long_callback
