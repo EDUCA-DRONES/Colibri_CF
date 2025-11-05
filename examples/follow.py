@@ -1,3 +1,3 @@
-from colibricf.cv.follow import Follow
+from colibricf.cv.follow import run
 
-Follow().run()
+run()
