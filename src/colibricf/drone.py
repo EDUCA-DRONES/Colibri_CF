@@ -10,7 +10,7 @@ from std_srvs.srv import Trigger
 from mavros import mavlink
 from mavros_msgs.srv import CommandBool, SetMode, ParamGet, ParamSet, CommandLong
 from mavros_msgs.msg import State, ParamValue, Mavlink
-from .cv.follow import _follow_callback
+from .cv.follow.follow import _follow_callback
 
 class DroneMode(enum.Enum):
     '''
