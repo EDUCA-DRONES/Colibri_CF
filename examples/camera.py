@@ -1,5 +1,7 @@
 from colibricf.camera import Camera
+import rospy
 
-camera = Camera()
+rospy.init_node('cv')
+Camera().draw_face()
 
 
