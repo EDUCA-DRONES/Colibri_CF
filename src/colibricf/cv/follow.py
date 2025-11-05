@@ -5,6 +5,7 @@ import numpy as np
 import mediapipe as mp
 from mediapipe.tasks.python import vision
 from .utils import draw_landmarks_on_image
+from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from clover import long_callback
 from ..drone import Drone
@@ -28,8 +29,7 @@ options = PoseLandmarkerOptions(
     base_options=BaseOptions(model_asset_path=model_path),
     running_mode=VisionRunningMode.LIVE_STREAM,
     num_poses=1,
-    min_pose_detection_confidence=0.6,
-    result_callback=result_callback)
+    min_pose_detection_confidence=0.65, result_callback=result_callback)
 
 landmarker = mp.tasks.vision.PoseLandmarker.create_from_options(options)
 
@@ -63,6 +63,7 @@ def handle_move(target_size):
 @long_callback
 def _follow_callback(data):
     frame = bridge.imgmsg_to_cv2(data,'bgr8')
+    image_pub = rospy.Publisher('~follow/debug', Image, queue_size=1)
 
     frame = cv.flip(frame, 1)
 
@@ -70,24 +71,17 @@ def _follow_callback(data):
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
     landmarker.detect_async(mp_image, frame_timestamp_ms)
 
-    if detection_results is None:
-        return
+    if detection_results is not None:
+        h, w, _ = frame.shape
+        center = trunc(w / 2)
+        target_size = set_target_size(detection_results, h)
 
-    h, w, _ = frame.shape
-    center = trunc(w / 2)
-    target_size = set_target_size(detection_results, h)
+        if target_size is not None:
+            landmark0 = detection_results.pose_landmarks[0][0]
+            centralize_in_target(center, landmark0, w)
+            handle_move(target_size)
 
-    if target_size is not None:
-        landmark0 = detection_results.pose_landmarks[0][0]
-        centralize_in_target(center, landmark0, w)
-        handle_move(target_size)
+        annotated_frame= draw_landmarks_on_image(frame, detection_results)
+        frame = cv.cvtColor(annotated_image, cv.COLOR_RGB2BGR)
 
-    annotated_image = draw_landmarks_on_image(frame, detection_results)
-    annotated_image_bgr = cv.cvtColor(annotated_image, cv.COLOR_RGB2BGR)
-
-    image_pub = rospy.Publisher('~follow/debug', Image)
-    image_pub.publish(bridge.cv2_to_imgmsg(annotated_image_bgr, 'bgr8'))
-
-def run():
-    rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
-    rospy.spin()
+    image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))

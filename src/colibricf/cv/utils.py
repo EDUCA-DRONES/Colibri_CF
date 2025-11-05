@@ -1,5 +1,5 @@
 import cv2 as cv
-from mediapipe import seolutions
+from mediapipe import solutions
 from mediapipe.framework.formats import landmark_pb2
 import numpy as np
 

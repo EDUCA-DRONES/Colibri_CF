@@ -10,7 +10,7 @@ from std_srvs.srv import Trigger
 from mavros import mavlink
 from mavros_msgs.srv import CommandBool, SetMode, ParamGet, ParamSet, CommandLong
 from mavros_msgs.msg import State, ParamValue, Mavlink
-
+from .cv.follow import _follow_callback
 
 class DroneMode(enum.Enum):
     '''
@@ -315,4 +315,9 @@ class Drone:
             print(f"Moving to waypoint {i+1}: ({wp.lat}, {wp.lon}, {wp.alt})")
             self.navigate_global_wait(lat=wp.lat, lon=wp.lon, z=wp.alt, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
+
+    def follow(self):
+        rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
+        rospy.spin()
+
 
