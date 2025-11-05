@@ -17,4 +17,4 @@ def _qrcode_callback(data):
         (x, y, w, h) = qrcode.rect
         xc = x + w/2
         yc = y + h/2
-        print('Found {} with data {} with center at x={}, y={}'.format(b_type, b_data, xc, yc))
+        print(f'Found {b_type} with data {b_data} with center at x={xc}, y={yc}')
