@@ -44,24 +44,62 @@ pip3 install -e .
 ## Quick Start
 
 ```python
-from colibricf.drone import Drone
+import rospy
+from colibricf.task import Task
 
-drone = Drone()
-drone.arm()
-rospy.sleep(2)
-drone.navigate_wait(x=0, y=0, z=self.TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
-drone.land_wait()
+class Mission(Task):
+
+    TAKEOFF_ALTITUDE = 1.4
+
+    def mission(self):
+        self.drone.arm()
+        rospy.sleep(2)
+        self.drone.navigate_wait(x=0, y=0, z=self.TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
+        # You don't need to explicitly call the land method.
+
+Mission().run()
 ```
 
 ## Project Structure
 
 ```
-colibricf/
-├── __init__.py       # Package initialization
-├── drone.py          # Drone flight control
-├── camera.py         # Camera operations
-├── servo.py          # Servo control
-└── task.py           # Task management and scheduling
+.
+├── docs
+│   ├── camera.md
+│   ├── drone.md
+│   ├── README.md
+│   ├── servo.md
+│   └── task.md
+├── examples
+│   ├── camera.py
+│   ├── flight.py
+│   ├── follow.py
+│   └── waypoint.py
+├── LICENSE
+├── pyproject.toml
+├── README.md
+└── src
+    └── colibricf
+        ├── camera.py
+        ├── cv
+        │   ├── face_detect.py
+        │   ├── follow.py
+        │   ├── haar_cascade
+        │   │   ├── haarcascade_eye.xml
+        │   │   ├── haarcascade_fullbody.xml
+        │   │   ├── haarcascade_upperbody.xml
+        │   │   └── haarcascade.xml
+        │   ├── __init__.py
+        │   ├── models
+        │   │   └── pose_landmarker_full.task
+        │   ├── qrcode.py
+        │   └── utils.py
+        ├── drone.py
+        ├── __init__.py
+        ├── servo.py
+        └── task.py
+
+
 ```
 
 ## Documentation
