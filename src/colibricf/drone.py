@@ -334,9 +334,28 @@ class Drone:
         elif target_size > 340:
             self.navigate_wait(x=-0.1, y=0, z=0, frame_id='body', speed=0.5, auto_arm=True)
 
+    def gc_handle_move(self, count):
+        if count == 1:
+            self.navigate_wait(x=0, y=0, z=0.1, frame_id='body', auto_arm=True)
+        elif count == 2:
+            self.navigate_wait(x=0, y=0, z=-0.1, frame_id='body')
+        elif count == 3:
+            self.navigate_wait(x=0.1, y=0, z=0, frame_id='body')
+        elif count == 4:
+            self.navigate_wait(x=-0.1, y=0, z=0, frame_id='body')
+        else:
+            self.navigate_wait(x=0, y=0, z=0, frame_id='body')
+        return
+
     def follow(self):
         from .cv.follow import _follow_callback
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
         rospy.spin()
+
+    def gesture_control(self):
+        from .cv.gesture_control import _gc_callback
+        rospy.Subscriber('main_camera/image_raw_throttled', Image, _gc_callback, queue_size=1)
+        rospy.spin()
+
 
 
