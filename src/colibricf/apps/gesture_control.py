@@ -45,6 +45,6 @@ def _gc_callback(data):
 
             cv.putText(blank, str(count), (20, 70), cv.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
 
-            gc_handle_move(count)
+            handle_move(count)
 
     image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
