@@ -48,7 +48,6 @@ def _gc_callback(data):
     h,w,_ = frame.shape
 
     points = []
-    dedos = [8, 12, 16, 20]
     if results.multi_hand_landmarks:
         for hand_landmark in results.multi_hand_landmarks:
             mp_drawing.draw_landmarks(blank, hand_landmark, mp_hands.HAND_CONNECTIONS, mp_styles.get_default_hand_landmarks_style(), mp_styles.get_default_hand_connections_style())
