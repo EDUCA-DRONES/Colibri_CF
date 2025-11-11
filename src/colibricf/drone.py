@@ -316,37 +316,6 @@ class Drone:
             self.navigate_global_wait(lat=wp.lat, lon=wp.lon, z=wp.alt, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
 
-    def centralize_in_target(self, center: float, landmark0, w):
-        pos = landmark0.x * w
-        if center - 100 <= pos <= center + 100:
-            self.set_yaw(yaw=radians(0), frame_id='body')
-        elif pos > center + 100:
-            self.set_yaw(yaw=radians(5), frame_id='body')
-        elif pos < center - 100:
-            self.set_yaw(yaw=radians(-5), frame_id='body')
-
-    def follow_handle_move(self, target_size: float):
-        if 250 <= target_size <= 340:
-            pass
-            # drone.navigate_wait(x=0, y=0, z=0.0, frame_id='body', speed=0.5, auto_arm=True)
-        elif target_size < 250:
-            self.navigate_wait(x=0.1, y=0.0, z=0.0, frame_id='body', speed=0.5, auto_arm=True)
-        elif target_size > 340:
-            self.navigate_wait(x=-0.1, y=0, z=0, frame_id='body', speed=0.5, auto_arm=True)
-
-    def gc_handle_move(self, count):
-        if count == 1:
-            self.navigate_wait(x=0, y=0, z=0.1, frame_id='body', auto_arm=True)
-        elif count == 2:
-            self.navigate_wait(x=0, y=0, z=-0.1, frame_id='body')
-        elif count == 3:
-            self.navigate_wait(x=0.1, y=0, z=0, frame_id='body')
-        elif count == 4:
-            self.navigate_wait(x=-0.1, y=0, z=0, frame_id='body')
-        else:
-            self.navigate_wait(x=0, y=0, z=0, frame_id='body')
-        return
-
     def follow(self):
         from .cv.follow import _follow_callback
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
