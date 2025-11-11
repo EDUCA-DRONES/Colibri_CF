@@ -2,8 +2,6 @@ import rospy
 import piexif
 import cv2
 import os
-from .cv.face_detect import _draw_face_callback
-from .cv.qrcode import _qrcode_callback
 from datetime import datetime
 from clover import srv
 from cv_bridge import CvBridge
@@ -20,14 +18,6 @@ class Camera():
         '''
 
         return self.bridge.imgmsg_to_cv2(rospy.wait_for_message('main_camera/image_raw_throttled', Image), 'bgr8')
-
-    def read_qrcode(self) -> None:
-        '''
-        Return a qrcode reader.
-        '''
-
-        rospy.Subscriber('main_camera/image_raw_throttled', Image, _qrcode_callback, queue_size=1)
-        rospy.spin()
 
     def save_image(self, path:str):
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -59,12 +49,3 @@ class Camera():
 
         exif_bytes = piexif.dump(exif_dict)
         piexif.insert(exif_bytes, filename)
-
-    def draw_face(self):
-        '''
-        Detect face in an image and publish in a ros node
-        '''
-
-        rospy.Subscriber('main_camera/image_raw_throttled', Image, _draw_face_callback, queue_size=1)
-        rospy.spin()
-

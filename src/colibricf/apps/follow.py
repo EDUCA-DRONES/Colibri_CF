@@ -1,18 +1,19 @@
+
 import time
 from math import trunc
 import cv2 as cv
 import mediapipe as mp
-from .utils import draw_landmarks_on_image
+from ..cv.utils import draw_landmarks_on_image
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from clover import long_callback
-from ..drone import Drone
+from .handlers.follow import follow_handle_move
 
 import rospy
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model_path= os.path.join(BASE_DIR, 'models', 'pose_landmarker_full.task')
+model_path= os.path.join(BASE_DIR, '..', 'cv', 'models', 'pose_landmarker_full.task')
 BaseOptions = mp.tasks.BaseOptions
 PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
 VisionRunningMode = mp.tasks.vision.RunningMode
@@ -57,8 +58,8 @@ def _follow_callback(data):
 
         if target_size is not None:
             landmark0 = detection_results.pose_landmarks[0][0]
-            Drone().centralize_in_target(center, landmark0, w)
-            Drone().follow_handle_move(target_size)
+            centralize_in_target(center, landmark0, w)
+            follow_handle_move(target_size)
 
         annotated_frame= draw_landmarks_on_image(frame, detection_results)
         frame = cv.cvtColor(annotated_frame, cv.COLOR_RGB2BGR)

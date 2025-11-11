@@ -1,5 +1,3 @@
-# Information: https://clover.coex.tech/programming
-from ..drone import Drone
 import cv2 as cv
 import mediapipe as mp
 import numpy as np
@@ -7,9 +5,8 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from clover import long_callback
+from .handlers.gesture_control import handle_move, handle_fingercount
 
-# Iniciando o drone
-drone = Drone()
 bridge = CvBridge()
 image_pub = rospy.Publisher('~gesture_control/debug', Image, queue_size=1)
 
@@ -18,20 +15,6 @@ mp_drawing = mp.solutions.drawing_utils
 mp_styles = mp.solutions.drawing_styles
 hands = mp_hands.Hands(max_num_hands=2, model_complexity=0, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-def handle_fingercount(points):
-    # RIGHT HAND PALM
-    DEDAO = 4
-    dedos = [8, 12, 16, 20]
-    count = 0
-
-    if points[DEDAO][0] < points[DEDAO - 2][0]:
-        count += 1
-
-    for x in dedos:
-        if points[x][1] < points[x - 2][1]:
-            count += 1
-
-    return count
 
 @long_callback
 def _gc_callback(data):
@@ -62,6 +45,6 @@ def _gc_callback(data):
 
             cv.putText(blank, str(count), (20, 70), cv.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 2)
 
-            drone.gc_handle_move(count)
+            handle_move(count)
 
     image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
