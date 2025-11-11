@@ -16,6 +16,7 @@ image_pub = rospy.Publisher('~gesture_control/debug', Image, queue_size=1)
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 mp_styles = mp.solutions.drawing_styles
+hands = mp_hands.Hands(max_num_hands=2, model_complexity=0, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 def handle_fingercount(points):
     # RIGHT HAND PALM
@@ -31,8 +32,6 @@ def handle_fingercount(points):
             count += 1
 
     return count
-
-hands = mp_hands.Hands(max_num_hands=2, model_complexity=0, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 @long_callback
 def _gc_callback(data):
