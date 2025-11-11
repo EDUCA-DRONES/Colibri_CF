@@ -3,7 +3,7 @@ from colibricf.task import Task
 
 class Follow(Task):
     '''
-    Follows a person in from of the drone.
+    Follows a person in front of the drone.
     '''
 
     TAKEOFF_ALTITUDE = 2
