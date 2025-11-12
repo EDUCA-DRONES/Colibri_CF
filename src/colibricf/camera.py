@@ -9,19 +9,23 @@ from sensor_msgs.msg import Image
 from fractions import Fraction
 
 class Camera():
-    def __init__(self):
+    def __init__(self) -> None:
         self.bridge = CvBridge()
 
-    def retrieve_cv_frame(self):
+    def retrieve_cv_frame(self) -> None:
         '''
         Retrieve a single frame.
         '''
 
         return self.bridge.imgmsg_to_cv2(rospy.wait_for_message('main_camera/image_raw_throttled', Image), 'bgr8')
 
-    def save_image(self, path:str):
+    def save_image(self, path:str) -> None:
+        '''
+        Save image to a jpeg file.
+        '''
+
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        filename = os.path.join(path, timestamp + '.jpg')
+        filename = os.path.join(path, 'clover-', timestamp + '.jpg')
 
         frame = self.retrieve_cv_frame()
         cv2.imwrite(filename, frame)
@@ -32,20 +36,32 @@ class Camera():
         lon = telemetry.lon
         alt = telemetry.alt
 
-        def to_deg(value):
-            frac = Fraction(value).limit_denominator()
-            return ((abs(frac.numerator), abs(frac.denominator)),)
+        def to_dms(value: float):
+            abs_degrees = abs(value)
+            degress = int(abs_degrees)
+            minutes = int((abs_degrees - degress) * 60)
+            seconds = int(((abs_degrees - degress) * 60 - minutes) * 60 * 10000)
+
+            return ((degress, 1), (minutes, 1), (seconds, 10000))
 
         exif_dict = {
             "GPS": {
-                piexif.GPSIFD.GPSLatitudeRef: "N" if lat >= 0 else "S",
-                piexif.GPSIFD.GPSLatitude: to_deg(lat),
-                piexif.GPSIFD.GPSLongitudeRef: "E" if lon >= 0 else "W",
-                piexif.GPSIFD.GPSLongitude: to_deg(lon),
-                piexif.GPSIFD.GPSAltitude: (int(alt), 1),
+                piexif.GPSIFD.GPSLatitudeRef: b"N" if lat >= 0 else b"S",
+                piexif.GPSIFD.GPSLatitude: to_dms(lat),
+                piexif.GPSIFD.GPSLongitudeRef: b"E" if lon >= 0 else b"W",
+                piexif.GPSIFD.GPSLongitude: to_dms(lon),
+                piexif.GPSIFD.GPSAltitude: (int(alt * 1000), 1000),
                 piexif.GPSIFD.GPSAltitudeRef: 0,
             }
         }
 
         exif_bytes = piexif.dump(exif_dict)
         piexif.insert(exif_bytes, filename)
+
+    def publish_image(self, frame, node_name: str) -> None:
+        '''
+        Publish an image to a node.
+        '''
+
+        image_pub = rospy.Publisher(f'~camera/{node}', Image, queue_size=1)
+        image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
