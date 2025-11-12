@@ -1,4 +1,5 @@
 import rospy
+import threading
 import piexif
 import cv2
 import os
@@ -11,6 +12,7 @@ from fractions import Fraction
 class Camera():
     def __init__(self) -> None:
         self.bridge = CvBridge()
+        self.recording: bool = False
 
     def retrieve_cv_frame(self) -> None:
         '''
@@ -65,3 +67,29 @@ class Camera():
 
         image_pub = rospy.Publisher(f'~camera/{node}', Image, queue_size=1)
         image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
+
+    @long_callback
+    def _rec_callback(msg):
+        if self.recording:
+            frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
+            self.out.write(frame)
+
+    def _record(self):
+        self.recording = True
+
+        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        filename = os.path.join(path, 'clover-', timestamp + '.mp4')
+
+        self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), 30, (640, 480))
+        rospy.Subscriber('/main_camera/image_raw', Image, self._rec_callback)
+        rospy.spin()
+
+    def record(self):
+        thread = threading.Thread(target=self._record)
+        thread.start()
+
+    def stop(self):
+        self.recording = False
+        self.out.release()
+
+
