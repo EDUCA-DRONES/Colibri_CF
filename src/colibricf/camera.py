@@ -9,17 +9,21 @@ from sensor_msgs.msg import Image
 from fractions import Fraction
 
 class Camera():
-    def __init__(self):
+    def __init__(self) -> None:
         self.bridge = CvBridge()
 
-    def retrieve_cv_frame(self):
+    def retrieve_cv_frame(self) -> None:
         '''
         Retrieve a single frame.
         '''
 
         return self.bridge.imgmsg_to_cv2(rospy.wait_for_message('main_camera/image_raw_throttled', Image), 'bgr8')
 
-    def save_image(self, path:str):
+    def save_image(self, path:str) -> None:
+        '''
+        Save image to a jpeg file.
+        '''
+
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         filename = os.path.join(path, timestamp + '.jpg')
 
@@ -32,7 +36,7 @@ class Camera():
         lon = telemetry.lon
         alt = telemetry.alt
 
-        def to_deg(value):
+        def to_deg(value: float):
             frac = Fraction(value).limit_denominator()
             return ((abs(frac.numerator), abs(frac.denominator)),)
 
@@ -49,3 +53,11 @@ class Camera():
 
         exif_bytes = piexif.dump(exif_dict)
         piexif.insert(exif_bytes, filename)
+
+    def publish_image(self, frame, node_name: str) -> None:
+        '''
+        Publish an image to a node.
+        '''
+
+        image_pub = rospy.Publisher(f'~camera/{node}', Image, queue_size=1)
+        image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
