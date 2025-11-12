@@ -219,7 +219,7 @@ class Drone:
         '''
 
         try:
-            aruco_client = dynamic_reconfigure.client.Client('aruco_detection')
+            aruco_client = dynamic_reconfigure.client.Client('aruco_detect')
             config = aruco_client.get_configuration()
             config['enable'] = not config['enable']
             aruco_client.update_configuration(config)
