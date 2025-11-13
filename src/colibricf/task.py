@@ -34,14 +34,14 @@ class Task(ABC):
             self.mission()
 
         except KeyboardInterrupt:
-            print("warning: aborting task")
+            rospy.logwarn('Aborting task.')
 
         except Exception as e:
-            print(f"ERROR: {e}")
+            rospy.logerr(e)
 
         finally:
-            print('note: landing')
             self.drone.land_wait()
+            self.camera.stop()
 
     def return_to_launch_confim(self):
         '''
