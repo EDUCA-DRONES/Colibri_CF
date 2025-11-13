@@ -9,21 +9,33 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from clover import long_callback
 from fractions import Fraction
+from .camera_utils.topic_rate import TopicRater
 
 class Camera():
     def __init__(self) -> None:
         self.bridge = CvBridge()
         self.recording: bool = False
         self.lock = threading.Lock()
+        self.topic = 'main_camera/image_raw_throttled'
+        self.rater = TopicRater(self.topic)
+        self.FPS = int(self.rater.get_rate())
         self.out = None
         self.thread = None
 
-    def retrieve_cv_frame(self) -> None:
+    def set_topic(self, topic: str) -> None:
+        '''
+        Set the topic that camera is looking at.
+        '''
+
+        self.topic = topic
+        self.FPS = int(self.rater.get_rate())
+
+    def retrieve_cv_frame(self):
         '''
         Retrieve a single frame.
         '''
 
-        return self.bridge.imgmsg_to_cv2(rospy.wait_for_message('main_camera/image_raw_throttled', Image), 'bgr8')
+        return self.bridge.imgmsg_to_cv2(rospy.wait_for_message(self.topic, Image), 'bgr8')
 
     def save_image(self, path:str) -> None:
         '''
@@ -31,7 +43,7 @@ class Camera():
         '''
 
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        filename = os.path.join(path, 'clover-', timestamp + '.jpg')
+        filename = os.path.join(path, 'clover-' + timestamp + '.jpg')
 
         frame = self.retrieve_cv_frame()
         cv2.imwrite(filename, frame)
@@ -80,12 +92,12 @@ class Camera():
                 if self.out is None:
                     h, w, _ = frame.shape
                     timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-                    filename = os.path.join('./', 'clover-', timestamp + '.mp4')
-                    self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), 30, (w, h))
+                    filename = os.path.join('./', 'clover-' + timestamp + '.mp4')
+                    self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), self.FPS, (w, h))
                 with self.lock:
                     self.out.write(frame)
 
-        rospy.Subscriber('main_camera/image_raw_throttled', Image, _rec_callback, queue_size=1)
+        rospy.Subscriber(self.topic, Image, _rec_callback, queue_size=1)
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown() and self.recording:
