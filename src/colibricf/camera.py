@@ -7,6 +7,7 @@ from datetime import datetime
 from clover import srv
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+from clover import long_callback
 from fractions import Fraction
 
 class Camera():
@@ -69,21 +70,22 @@ class Camera():
         '''
 
         image_pub = rospy.Publisher(f'~camera/{node}', Image, queue_size=1)
-        image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
-
-    def _rec_callback(self, msg):
-        if self.recording:
-            frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
-
-            with self.lock:
-                self.out.write(frame)
+        image_pub.publish(self.bridge.cv2_to_imgmsg(frame, 'bgr8'))
 
     def _record(self):
+        @long_callback("_rec_callback")
+        def _rec_callback(msg):
+            if self.recording:
+                frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
+
+                with self.lock:
+                    self.out.write(frame)
+
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         filename = os.path.join(path, 'clover-', timestamp + '.mp4')
 
         self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), 30, (640, 480))
-        rospy.Subscriber('/main_camera/image_raw', Image, self._rec_callback)
+        rospy.Subscriber('main_camera/image_raw', Image, _rec_callback)
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown() and self.recording:
@@ -108,6 +110,4 @@ class Camera():
             if self.out:
                 self.out.release()
                 self.out = None
-
-
 
