@@ -1,5 +1,4 @@
 import rospy
-import threading
 import piexif
 import cv2
 import os
@@ -7,9 +6,7 @@ from datetime import datetime
 from clover import srv
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
-from clover import long_callback
 from fractions import Fraction
-from .camera_utils.topic_rate import TopicRater
 from .camera_utils.recorder import Recorder
 
 class Camera():
@@ -25,7 +22,7 @@ class Camera():
 
         self.topic = topic
         self.recorder.topic = topic
-        self.sync_fps()
+        self.recorder.sync_fps()
 
     def retrieve_cv_frame(self):
         '''
