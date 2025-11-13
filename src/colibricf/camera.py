@@ -79,14 +79,11 @@ class Camera():
 
                 if self.out is None:
                     h, w, _ = frame.shape
+                    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+                    filename = os.path.join('./', 'clover-', timestamp + '.mp4')
                     self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), 30, (w, h))
                 with self.lock:
                     self.out.write(frame)
-
-        timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        path = './data/videos'
-        filename = os.path.join(path, 'clover-', timestamp + '.mp4')
-
 
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _rec_callback, queue_size=1)
         rate = rospy.Rate(10)
