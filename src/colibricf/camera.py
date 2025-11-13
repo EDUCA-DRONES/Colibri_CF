@@ -19,9 +19,10 @@ class Camera():
         self.topic = 'main_camera/image_raw_throttled'
         self.rater = TopicRater(self.topic)
         rospy.Subscriber(self.topic, Image, self.rater.callback)
-        self.FPS = int(self.rater.get_rate())
+        self.FPS = None
         self.out = None
         self.thread = None
+        self.sync_fps()
 
     def set_topic(self, topic: str) -> None:
         '''
@@ -29,11 +30,13 @@ class Camera():
         '''
 
         self.topic = topic
-        rate = rospy.Rate(3)
-        for _ in range(5):
+        self.sync_fps()
+
+    def sync_fps(self) -> None:
+        rate = rospy.Rate(1)
+        for _ in range(5): # Margin for fps aproach
             self.FPS = int(self.rater.get_rate())
             rate.sleep()
-
 
     def retrieve_cv_frame(self):
         '''
