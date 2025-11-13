@@ -18,6 +18,7 @@ class Camera():
         self.lock = threading.Lock()
         self.topic = 'main_camera/image_raw_throttled'
         self.rater = TopicRater(self.topic)
+        rospy.Subscriber(self.topic, Image, self.rater.callback)
         self.FPS = int(self.rater.get_rate())
         self.out = None
         self.thread = None
@@ -28,7 +29,11 @@ class Camera():
         '''
 
         self.topic = topic
-        self.FPS = int(self.rater.get_rate())
+        rate = rospy.Rate(3)
+        for _ in range(5):
+            self.FPS = int(self.rater.get_rate())
+            rate.sleep()
+
 
     def retrieve_cv_frame(self):
         '''
