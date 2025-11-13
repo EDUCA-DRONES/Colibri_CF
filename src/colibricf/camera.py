@@ -1,4 +1,5 @@
 import rospy
+import threading
 import piexif
 import cv2
 import os
@@ -6,18 +7,32 @@ from datetime import datetime
 from clover import srv
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
+from clover import long_callback
 from fractions import Fraction
+from .camera_utils.topic_rate import TopicRater
+from .camera_utils.recorder import Recorder
 
 class Camera():
-    def __init__(self) -> None:
+    def __init__(self, topic: str = 'main_camera/image_raw_throttled') -> None:
         self.bridge = CvBridge()
+        self.topic = topic
+        self.recorder = Recorder(self.topic)
 
-    def retrieve_cv_frame(self) -> None:
+    def set_topic(self, topic: str) -> None:
+        '''
+        Set the topic that camera is looking at.
+        '''
+
+        self.topic = topic
+        self.recorder.topic = topic
+        self.sync_fps()
+
+    def retrieve_cv_frame(self):
         '''
         Retrieve a single frame.
         '''
 
-        return self.bridge.imgmsg_to_cv2(rospy.wait_for_message('main_camera/image_raw_throttled', Image), 'bgr8')
+        return self.bridge.imgmsg_to_cv2(rospy.wait_for_message(self.topic, Image), 'bgr8')
 
     def save_image(self, path:str) -> None:
         '''
@@ -25,7 +40,7 @@ class Camera():
         '''
 
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-        filename = os.path.join(path, 'clover-', timestamp + '.jpg')
+        filename = os.path.join(path, 'clover-' + timestamp + '.jpg')
 
         frame = self.retrieve_cv_frame()
         cv2.imwrite(filename, frame)
@@ -64,4 +79,18 @@ class Camera():
         '''
 
         image_pub = rospy.Publisher(f'~camera/{node}', Image, queue_size=1)
-        image_pub.publish(bridge.cv2_to_imgmsg(frame, 'bgr8'))
+        image_pub.publish(self.bridge.cv2_to_imgmsg(frame, 'bgr8'))
+
+    def record(self):
+        '''
+        Start recording.
+        '''
+
+        self.recorder.record()
+
+    def stop(self):
+        '''
+        Stop recording.
+        '''
+
+        self.recorder.stop()
