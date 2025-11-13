@@ -73,19 +73,22 @@ class Camera():
         image_pub.publish(self.bridge.cv2_to_imgmsg(frame, 'bgr8'))
 
     def _record(self):
-        @long_callback("_rec_callback")
         def _rec_callback(msg):
             if self.recording:
                 frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
 
+                if self.out is None:
+                    h, w, _ = frame.shape
+                    self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), 30, (w, h))
                 with self.lock:
                     self.out.write(frame)
 
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        path = './data/videos'
         filename = os.path.join(path, 'clover-', timestamp + '.mp4')
 
-        self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), 30, (640, 480))
-        rospy.Subscriber('main_camera/image_raw', Image, _rec_callback)
+
+        rospy.Subscriber('main_camera/image_raw_throttled', Image, _rec_callback, queue_size=1)
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown() and self.recording:
