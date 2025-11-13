@@ -3,7 +3,7 @@ import time
 from sensor_msgs.msg import Image
 
 class TopicRater:
-    def __init__(self, topic_name, sample_size=50):
+    def __init__(self, topic_name, sample_size=30):
         self.topic_name = topic_name
         self.sample_size = sample_size
         self.times = []
