@@ -34,6 +34,7 @@ class Task(ABC):
 
         try:
             self.logger.start()
+            rospy.logwarn('Starting task.')
             self.mission()
 
         except KeyboardInterrupt:

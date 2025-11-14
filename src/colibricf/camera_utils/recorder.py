@@ -11,6 +11,7 @@ from ..files.filemanager import FileManager, Extension
 class Recorder:
     def __init__(self, topic: str):
         self.filemanager = FileManager()
+        self.filename = None
         self.topic = topic
         self.bridge = CvBridge()
         self.lock = threading.Lock()
@@ -34,7 +35,6 @@ class Recorder:
             fps = int(self.rater.get_rate())
             self.FPS = fps if fps >= 5 else 5
             rate.sleep()
-        rospy.loginfo(f"Fps synced to {self.FPS}.")
 
     def _record(self):
         def _rec_callback(msg):
@@ -43,8 +43,8 @@ class Recorder:
 
                 if self.out is None:
                     h, w, _ = frame.shape
-                    filename = self.filemanager.filename(Extension.VIDEO_MP4)
-                    self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), self.FPS, (w, h))
+                    self.filename = self.filemanager.filename(Extension.VIDEO_MP4)
+                    self.out = cv2.VideoWriter(self.filename, cv2.VideoWriter_fourcc(*"mp4v"), self.FPS, (w, h))
                 with self.lock:
                     self.out.write(frame)
 
@@ -58,12 +58,14 @@ class Recorder:
     def record(self):
         if not self.recording:
             self.sync_fps()
+            rospy.loginfo('Start recording.')
             self.recording = True
             self.thread = threading.Thread(target=self._record, daemon=True)
             self.thread.start()
 
     def stop(self):
         if self.recording:
+            rospy.loginfo(f'Video saved: {filename}')
             self.recording = False
             if self.thread:
                 self.thread.join(timeout=2)

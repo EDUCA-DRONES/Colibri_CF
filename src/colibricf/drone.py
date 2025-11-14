@@ -49,6 +49,7 @@ class GlobalWaypoint():
 class Drone:
     def __init__(self, node_name="flight"):
         rospy.init_node(node_name)
+        rospy.loginfo('Starting services.')
 
         self.tolerance = 0.1
 
@@ -78,6 +79,7 @@ class Drone:
 
         self._navigate(x=x, y=y, z=z, yaw=yaw, speed=speed,
                        frame_id=frame_id, auto_arm=auto_arm)
+        rospy.loginfo(f'Navigating: (x:{x}, y:{y}, z:{z}).')
 
         while not rospy.is_shutdown():
             telemetry = self.get_telemetry(frame_id='navigate_target')
@@ -94,6 +96,7 @@ class Drone:
 
         self.navigate_global(lat=lat, lon=lon, z=z, yaw=yaw,
                              frame_id=frame_id, speed=speed, auto_arm=auto_arm)
+        rospy.loginfo(f'Navigating: (lat:{lat}, lon:{lon}, z:{z}).')
 
         while not rospy.is_shutdown():
             telemetry = self.get_telemetry(frame_id='navigate_target')
@@ -107,6 +110,8 @@ class Drone:
         '''
 
         self._land()
+        rospy.loginfo('Landing.')
+
         while self.get_telemetry().armed:
             rospy.sleep(0.2)
 
@@ -136,6 +141,7 @@ class Drone:
         try:
             arm_service = rospy.ServiceProxy('mavros/cmd/arming', CommandBool)
             arm_service(arm)
+            rospy.loginfo('Arming.')
         except rospy.ServiceException as e:
             rospy.logerr(f"Service call failed: {e}")
 
@@ -161,6 +167,7 @@ class Drone:
         start_stamp = rospy.get_rostime()
 
         r = rospy.Rate(10)
+        rospy.loginfo(f'Set orbit tragetory: radius:{radius}, speed:{speed}')
 
         while not rospy.is_shutdown():
             angle = (rospy.get_rostime() - start_stamp).to_sec() * SPEED
@@ -200,7 +207,7 @@ class Drone:
         Calibrate the drone's gyro.
         '''
 
-        rospy.loginfo('Calibrate gyro')
+        rospy.loginfo('Calibrating gyro.')
         if not self.send_command(command=mavutil.mavlink.MAV_CMD_PREFLIGHT_CALIBRATION, param1=1).success:
             return False
 
@@ -210,7 +217,7 @@ class Drone:
             if state.system_status == mavutil.mavlink.MAV_STATE_CALIBRATING or state.system_status == mavutil.mavlink.MAV_STATE_UNINIT:
                 calibrating = True
             elif calibrating and state.system_status == mavutil.mavlink.MAV_STATE_STANDBY:
-                rospy.loginfo('Calibrating finished')
+                rospy.loginfo('Calibrating finished.')
                 return True
 
     def toggle_aruco(self) -> None:
@@ -224,9 +231,9 @@ class Drone:
             config['enable'] = not config['enable']
             aruco_client.update_configuration(config)
             rospy.loginfo(
-                f"Aruco detection {'enabled' if config['enable'] else 'disabled'}")
+                f"Aruco detection {'enabled' if config['enable'] else 'disabled'}.")
         except Exception as e:
-            rospy.logerr(f"Failed to toggle ArUco detection: {e}")
+            rospy.logerr(f"Failed to toggle ArUco detection: {e}.")
 
     def toggle_optical_flow(self) -> None:
         '''
@@ -240,9 +247,9 @@ class Drone:
             config['enable'] = not config['enable']
             optical_flow_client.update_configuration(config)
             rospy.loginfo(
-                f"Optical flow {'enabled' if config['enable'] else 'disabled'}")
+                f"Optical flow {'enabled' if config['enable'] else 'disabled'}.")
         except Exception as e:
-            rospy.logerr(f"Failed to toggle optical flow: {e}")
+            rospy.logerr(f"Failed to toggle optical flow: {e}.")
 
     def read_cparam(self, param_name: str) -> float:
         '''
@@ -255,10 +262,10 @@ class Drone:
             if response.success:
                 return response.value.real
             else:
-                rospy.logerr(f"Failed to read parameter {param_name}")
+                rospy.logerr(f"Failed to read parameter {param_name}.")
                 return float("nan")
         except rospy.ServiceException as e:
-            rospy.logerr(f"Service call failed: {e}")
+            rospy.logerr(f"Service call failed: {e}.")
             return float("nan")
 
     def write_cparam(self, param_name: str, value: float) -> bool:
@@ -276,7 +283,7 @@ class Drone:
                 rospy.logerr(f"Failed to write parameter {param_name}")
                 return False
         except rospy.ServiceException as e:
-            rospy.logerr(f"Service call failed: {e}")
+            rospy.logerr(f"Service call failed: {e}.")
             return False
 
     def haversine_distance(self, lat1, lon1, lat2, lon2, radius=6371000):
@@ -302,7 +309,6 @@ class Drone:
         '''
 
         for wp in waypoints:
-            print(f"note: navigating to waypoint: ({wp.x}, {wp.y}, {wp.z})")
             self.navigate_wait(x=wp.x, y=wp.y, z=wp.z, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
 
@@ -312,17 +318,18 @@ class Drone:
         '''
 
         for i, wp in enumerate(waypoints):
-            print(f"Moving to waypoint {i+1}: ({wp.lat}, {wp.lon}, {wp.alt})")
             self.navigate_global_wait(lat=wp.lat, lon=wp.lon, z=wp.alt, speed=0.5)
             rospy.sleep(0.5)  # Pause at waypoint
 
     def follow(self):
         from .apps.follow import _follow_callback
+        rospy.loginfo('Starting follow app.')
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
         rospy.spin()
 
     def gesture_control(self):
         from .apps.gesture_control import _gc_callback
+        rospy.loginfo('Starting gesture control app.')
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _gc_callback, queue_size=1)
         rospy.spin()
 

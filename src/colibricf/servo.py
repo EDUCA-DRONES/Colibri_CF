@@ -1,4 +1,5 @@
 import pigpio
+import rospy
 import time
 
 class Servo():
@@ -17,11 +18,14 @@ class Servo():
         '''
 
         try:
+            rospy.loginfo('Servo: neutral.')
             self.pi.set_servo_pulsewidth(self.gpio, 1000)
             time.sleep(sleep)
-            self.pi.write(self.gpio, 0)
         except KeyboardInterrupt:
+            pass
+        finally:
             self.pi.write(self.gpio, 0)
+
 
     def pwm_high(self, sleep=0.45):
         '''
@@ -29,10 +33,12 @@ class Servo():
         '''
 
         try:
+            rospy.loginfo('Servo: high.')
             self.pi.set_servo_pulsewidth(self.gpio, 2000)
             time.sleep(sleep)
-            self.pi.write(self.gpio, 0)
         except KeyboardInterrupt:
+            pass
+        finally:
             self.pi.write(self.gpio, 0)
 
     def pwm_low(self, sleep=0.45):
@@ -41,10 +47,12 @@ class Servo():
         '''
 
         try:
+            rospy.loginfo('Servo: low.')
             self.pi.set_servo_pulsewidth(self.gpio, 500)
             time.sleep(sleep)
-            self.pi.write(self.gpio, 0)
         except KeyboardInterrupt:
+            pass
+        finally:
             self.pi.write(self.gpio, 0)
 
     def set_pulsewidth(self, sleep=0.45, pulsewidth=1500):
@@ -53,10 +61,12 @@ class Servo():
         '''
 
         try:
+            rospy.loginfo(f'Servo: pulsewidth: {pulsewidth}.')
             self.pi.set_servo_pulsewidth(self.gpio, pulsewidth)
             time.sleep(sleep)
-            self.pi.write(self.gpio, 0)
         except KeyboardInterrupt:
+            pass
+        finally:
             self.pi.write(self.gpio, 0)
 
 
