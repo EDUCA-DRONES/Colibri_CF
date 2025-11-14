@@ -6,7 +6,7 @@ from .drone import Drone, DroneMode
 from .camera import Camera
 from .servo import Servo
 from typing import Union
-from .files.logger import TaskLogger
+from .files.logger import Logger
 
 class Task(ABC):
     '''
@@ -21,7 +21,7 @@ class Task(ABC):
 
         self.drone = Drone()
         self.camera = Camera()
-        self.logger = TaskLogger()
+        self.logger = Logger()
 
     @abstractmethod
     def mission(self):
@@ -45,6 +45,7 @@ class Task(ABC):
         finally:
             self.drone.land_wait()
             self.camera.stop()
+            self.logger.stop()
 
     def return_to_launch_confim(self):
         '''
