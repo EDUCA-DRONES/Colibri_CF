@@ -1,11 +1,12 @@
 # Information: https://clover.coex.tech/programming
-
+#
 import rospy
 from abc import ABC, abstractmethod
 from .drone import Drone, DroneMode
 from .camera import Camera
 from .servo import Servo
 from typing import Union
+from .files.logger import TaskLogger
 
 class Task(ABC):
     '''
@@ -20,6 +21,7 @@ class Task(ABC):
 
         self.drone = Drone()
         self.camera = Camera()
+        self.logger = TaskLogger()
 
     @abstractmethod
     def mission(self):
@@ -31,6 +33,7 @@ class Task(ABC):
         '''
 
         try:
+            self.logger.start()
             self.mission()
 
         except KeyboardInterrupt:
