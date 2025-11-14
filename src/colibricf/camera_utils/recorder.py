@@ -19,7 +19,6 @@ class Recorder:
         self.FPS = None
         self.out = None
         self.thread = None
-        self.sync_fps()
 
     def sync_fps(self) -> None:
         '''
@@ -58,6 +57,7 @@ class Recorder:
 
     def record(self):
         if not self.recording:
+            self.sync_fps()
             self.recording = True
             self.thread = threading.Thread(target=self._record, daemon=True)
             self.thread.start()
