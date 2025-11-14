@@ -65,7 +65,7 @@ class Recorder:
 
     def stop(self):
         if self.recording:
-            rospy.loginfo(f'Video saved: {filename}')
+            rospy.loginfo(f'Video saved: {self.filename}')
             self.recording = False
             if self.thread:
                 self.thread.join(timeout=2)
