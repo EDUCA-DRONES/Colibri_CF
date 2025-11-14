@@ -16,6 +16,7 @@ class Task(ABC):
     RTL_ALTITUDE = 10
 
     def __init__(self, gpio: Union[int, None] = None) -> None:
+        self.drone = Drone()
         self.logger = Logger()
         self.logger.start()
         rospy.sleep(3)
@@ -23,7 +24,6 @@ class Task(ABC):
         if gpio != None:
             self.servo = Servo(gpio)
 
-        self.drone = Drone()
         self.camera = Camera()
 
     @abstractmethod
@@ -41,6 +41,7 @@ class Task(ABC):
 
         except KeyboardInterrupt:
             rospy.logwarn('Aborting task.')
+            rospy.sleep(0.5)
 
         except Exception as e:
             rospy.logerr(e)
@@ -49,7 +50,7 @@ class Task(ABC):
             try:
                 self.drone.land_wait()
             except (rospy.service.ServiceException, rospy.exceptions.ROSInterruptException) as e:
-                rospy.logeer(e)
+                rospy.logerr(e)
 
             self.camera.stop()
             rospy.sleep(3)
