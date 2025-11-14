@@ -16,12 +16,15 @@ class Task(ABC):
     RTL_ALTITUDE = 10
 
     def __init__(self, gpio: Union[int, None] = None) -> None:
+        self.logger = Logger()
+        self.logger.start()
+        rospy.sleep(3)
+
         if gpio != None:
             self.servo = Servo(gpio)
 
         self.drone = Drone()
         self.camera = Camera()
-        self.logger = Logger()
 
     @abstractmethod
     def mission(self):
@@ -33,7 +36,6 @@ class Task(ABC):
         '''
 
         try:
-            self.logger.start()
             rospy.logwarn('Starting task.')
             self.mission()
 
@@ -46,6 +48,7 @@ class Task(ABC):
         finally:
             self.drone.land_wait()
             self.camera.stop()
+            rospy.sleep(3)
             self.logger.stop()
 
     def return_to_launch_confim(self):
