@@ -38,7 +38,7 @@ class Camera():
         Save image to a jpeg file.
         '''
 
-        filename = self.filemanager.filename(extension.value)
+        filename = self.filemanager.filename(extension)
 
         frame = self.retrieve_cv_frame()
         cv2.imwrite(filename, frame)
