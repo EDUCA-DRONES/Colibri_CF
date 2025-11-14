@@ -30,7 +30,7 @@ class Logger:
 
     def stop(self):
         try:
-            if self.file and self.rosout is not None:
+            if self.log_file and self.rosout is not None:
                 self.rosout.unregister()
                 self.log_file.flush()
                 self.log_file.close()
