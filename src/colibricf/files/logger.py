@@ -1,21 +1,6 @@
-import sys
 import rospy
 from .filemanager import FileManager, Extension
-from pathlib import Path
-
-class TeeStdout:
-    def __init__(self, *streams):
-        self.streams = streams
-
-    def write(self, data):
-        for s in self.streams:
-            s.write(data)
-            s.flush()
-
-    def flush(self):
-        for s in self.streams:
-            s.flush()
-
+from rosgraph_msgs.msg import Log
 
 class TaskLogger:
     def __init__(self):
@@ -23,10 +8,24 @@ class TaskLogger:
         self.filename = self.filemanager.filename(Extension.TASK_LOG)
 
     def start(self):
-        self.log_file = open(self.filename, 'a')
-        sys.stdout = TeeStdout(sys.stdout, self.log_file)
-        sys.stderr = TeeStdout(sys.stderr, self.log_file)
+        def _callback(msg):
+            level_map = {
+                msg.DEBUG: 'DEBUG',
+                msg.INFO: 'INFO',
+                msg.WARN: 'WARN',
+                msg.ERROR: 'ERROR',
+                msg.FATAL: 'FATAL'
+            }
 
+            level = level_map.get(msg.level, 'UNKNOWN')
+            timestamp = msg.header.stamp_to_sec()
+
+            line = f'[{level}] [{timestamp:.3f}]: {msg.msg}\n'
+            self.log_file.write(line)
+            self.log_file.flush()
+
+        self.log_file = open(self.filename, 'a')
+        rospy.Subscriber('/rosout', Log, _callback)
         rospy.loginfo(f'Task log started: {self.filename}')
 
 
