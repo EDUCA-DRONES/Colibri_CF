@@ -36,7 +36,11 @@ class FileManager():
 
     def mkdir(self, dirname: str) -> None:
         if not os.path.exists(dirname):
-            os.makedirs(dirname, exist_ok=True)
+            try:
+                os.makedirs(dirname, exist_ok=True)
+            except Exception as e:
+                rospy.logerr(e)
+
 
     def add_metadata(self, filename: str):
         telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)(frame_id='body')
