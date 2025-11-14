@@ -45,11 +45,12 @@ class Task(ABC):
         except Exception as e:
             rospy.logerr(e)
 
-        except rospy.service.ServiceException as e:
-            rospy.logerr(e)
-
         finally:
-            self.drone.land_wait()
+            try:
+                self.drone.land_wait()
+            except (rospy.service.ServiceException, rospy.exceptions.ROSInterruptException) as e:
+                rospy.logeer(e)
+
             self.camera.stop()
             rospy.sleep(3)
             self.logger.stop()
