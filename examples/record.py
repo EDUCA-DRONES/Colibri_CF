@@ -15,11 +15,9 @@ class Mission(Task):
         # Implement your mission here
         self.camera.record()
 
-        print('note: arming')
         self.drone.arm()
         rospy.sleep(2)
 
-        print('Take off and hover 1.4 m above the ground')
         self.drone.navigate_wait(x=0, y=0, z=self.TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
 
         self.camera.stop()
