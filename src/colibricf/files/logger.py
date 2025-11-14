@@ -1,15 +1,17 @@
 import rospy
+import threading
+from typing import Union
 from .filemanager import FileManager, Extension
 from rosgraph_msgs.msg import Log
-import threading
 
 class Logger:
     def __init__(self):
         self.filemanager = FileManager()
         self.filename = self.filemanager.filename(Extension.TASK_LOG)
         self.lock = threading.Lock()
+        self.thread: Union[threading.Thread | None]= None
 
-    def start(self):
+    def run(self):
         def _callback(msg):
             with self.lock:
                 level_map = {
@@ -31,9 +33,15 @@ class Logger:
         self.rosout = rospy.Subscriber('/rosout', Log, _callback)
         rospy.loginfo(f'Task log started: {self.filename}')
 
+    def start(self):
+        threading.Thread(target=self.run).start()
+
     def stop(self):
         try:
             if self.log_file and self.rosout is not None:
+                if self.thread:
+                    self.thread.join(timeout=2)
+
                 self.rosout.unregister()
                 self.log_file.flush()
                 self.log_file.close()
