@@ -19,6 +19,8 @@ class FileManager():
         else:
             path = os.path.join(self.datadir, 'image')
 
+        self.mkdir(path)
+
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         system = 'clover'
         filename = os.path.join(path, f'{system}-{timestamp}{extension.value}')
