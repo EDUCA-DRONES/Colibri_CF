@@ -18,7 +18,7 @@ class TaskLogger:
             }
 
             level = level_map.get(msg.level, 'UNKNOWN')
-            timestamp = msg.header.stamp_to_sec()
+            timestamp = msg.header.stamp.to_sec()
 
             line = f'[{level}] [{timestamp:.3f}]: {msg.msg}\n'
             self.log_file.write(line)
