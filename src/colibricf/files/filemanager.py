@@ -21,7 +21,7 @@ class FileManager():
             path = os.path.join(self.datadir, 'video')
         elif extension == Extension.IMG_JPEG or extension == Extension.IMG_PNG:
             path = os.path.join(self.datadir, 'image')
-        elif extension == Extension.MISSION_LOG:
+        elif extension == Extension.TASK_LOG:
             path = os.path.join(self.datadir, 'log', 'mission')
         elif extension == Extension.SYS_LOG:
             path = os.path.join(self.datadir, 'log', 'system')
