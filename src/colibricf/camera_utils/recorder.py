@@ -6,9 +6,11 @@ from datetime import datetime
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from .topic_rate import TopicRater
+from ..files.filemanager import FileManager, Extension
 
 class Recorder:
     def __init__(self, topic: str):
+        self.filemanager = FileManager()
         self.topic = topic
         self.bridge = CvBridge()
         self.lock = threading.Lock()
@@ -42,8 +44,7 @@ class Recorder:
 
                 if self.out is None:
                     h, w, _ = frame.shape
-                    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-                    filename = os.path.join('./', 'clover-' + timestamp + '.mp4')
+                    filename = self.filemanager.filename(Extension.VIDEO_MP4)
                     self.out = cv2.VideoWriter(filename, cv2.VideoWriter_fourcc(*"mp4v"), self.FPS, (w, h))
                 with self.lock:
                     self.out.write(frame)

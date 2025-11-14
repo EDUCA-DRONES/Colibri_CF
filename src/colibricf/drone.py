@@ -191,9 +191,9 @@ class Drone:
         '''
 
         try:
-            self._set_mode(custom_mode=mode)
+            self._set_mode(custom_mode=mode.value)
         except rospy.ServiceException as e:
-            rospy.logerr(f"Failed to set mode {mode}: {e}")
+            rospy.logerr(f"Failed to set mode {mode.value}: {e}")
 
     def calibrate_gyro(self):
         '''
