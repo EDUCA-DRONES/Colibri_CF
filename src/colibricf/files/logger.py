@@ -5,7 +5,7 @@ from pathlib import Path
 
 class TeeStdout:
     def __init__(self, *streams):
-        self.streams = stream
+        self.streams = streams
 
     def write(self, data):
         for s in self.streams:
