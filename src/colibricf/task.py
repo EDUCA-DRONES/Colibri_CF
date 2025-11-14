@@ -1,11 +1,12 @@
 # Information: https://clover.coex.tech/programming
-
+#
 import rospy
 from abc import ABC, abstractmethod
 from .drone import Drone, DroneMode
 from .camera import Camera
 from .servo import Servo
 from typing import Union
+from .files.logger import Logger
 
 class Task(ABC):
     '''
@@ -15,10 +16,14 @@ class Task(ABC):
     RTL_ALTITUDE = 10
 
     def __init__(self, gpio: Union[int, None] = None) -> None:
+        self.drone = Drone()
+        self.logger = Logger()
+        self.logger.start()
+        rospy.sleep(3)
+
         if gpio != None:
             self.servo = Servo(gpio)
 
-        self.drone = Drone()
         self.camera = Camera()
 
     @abstractmethod
@@ -31,17 +36,25 @@ class Task(ABC):
         '''
 
         try:
+            rospy.logwarn('Starting task.')
             self.mission()
 
         except KeyboardInterrupt:
             rospy.logwarn('Aborting task.')
+            rospy.sleep(0.5)
 
         except Exception as e:
             rospy.logerr(e)
 
         finally:
-            self.drone.land_wait()
+            try:
+                self.drone.land_wait()
+            except (rospy.service.ServiceException, rospy.exceptions.ROSInterruptException) as e:
+                rospy.logerr(e)
+
             self.camera.stop()
+            rospy.sleep(3)
+            self.logger.stop()
 
     def return_to_launch_confim(self):
         '''

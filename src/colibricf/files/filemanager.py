@@ -8,6 +8,8 @@ class Extension(Enum):
     VIDEO_MP4 = '.mp4'
     IMG_PNG = '.png'
     IMG_JPEG = '.jpg'
+    TASK_LOG = '.log'
+    SYS_LOG = '.csv'
 
 class FileManager():
     def __init__(self, datadir: str = '/var/lib/clover/'):
@@ -17,8 +19,12 @@ class FileManager():
         path = None
         if extension == Extension.VIDEO_MP4:
             path = os.path.join(self.datadir, 'video')
-        else:
+        elif extension == Extension.IMG_JPEG or extension == Extension.IMG_PNG:
             path = os.path.join(self.datadir, 'image')
+        elif extension == Extension.TASK_LOG:
+            path = os.path.join(self.datadir, 'log', 'mission')
+        elif extension == Extension.SYS_LOG:
+            path = os.path.join(self.datadir, 'log', 'system')
 
         self.mkdir(path)
 
@@ -30,7 +36,11 @@ class FileManager():
 
     def mkdir(self, dirname: str) -> None:
         if not os.path.exists(dirname):
-            os.makedirs(dirname, exist_ok=True)
+            try:
+                os.makedirs(dirname, exist_ok=True)
+            except Exception as e:
+                rospy.logerr(e)
+
 
     def add_metadata(self, filename: str):
         telemetry = rospy.ServiceProxy('get_telemetry', srv.GetTelemetry)(frame_id='body')
@@ -60,5 +70,4 @@ class FileManager():
 
         exif_bytes = piexif.dump(exif_dict)
         piexif.insert(exif_bytes, filename)
-
 

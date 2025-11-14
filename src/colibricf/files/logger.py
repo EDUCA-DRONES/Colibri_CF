@@ -1,0 +1,50 @@
+import rospy
+import threading
+from typing import Union
+from .filemanager import FileManager, Extension
+from rosgraph_msgs.msg import Log
+
+class Logger:
+    def __init__(self):
+        self.filemanager = FileManager()
+        self.filename = self.filemanager.filename(Extension.TASK_LOG)
+        self.lock = threading.Lock()
+        self.thread: Union[threading.Thread | None]= None
+
+    def run(self):
+        def _callback(msg):
+            with self.lock:
+                level_map = {
+                    msg.DEBUG: 'DEBUG',
+                    msg.INFO: 'INFO',
+                    msg.WARN: 'WARN',
+                    msg.ERROR: 'ERROR',
+                    msg.FATAL: 'FATAL'
+                }
+
+                level = level_map.get(msg.level, 'UNKNOWN')
+                timestamp = msg.header.stamp.to_sec()
+
+                line = f'[{level}] [{timestamp:.5f}]: {msg.msg}\n'
+                self.log_file.write(line)
+                self.log_file.flush()
+
+        self.log_file = open(self.filename, 'a')
+        self.rosout = rospy.Subscriber('/rosout', Log, _callback)
+        rospy.loginfo(f'Task log started: {self.filename}')
+
+    def start(self):
+        threading.Thread(target=self.run).start()
+
+    def stop(self):
+        try:
+            if self.log_file and self.rosout is not None:
+                if self.thread:
+                    self.thread.join(timeout=2)
+
+                self.rosout.unregister()
+                self.log_file.flush()
+                self.log_file.close()
+
+        except Exception as e:
+            rospy.logerr()
