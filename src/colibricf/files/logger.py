@@ -27,6 +27,6 @@ class TaskLogger:
         sys.stdout = TeeStdout(sys.stdout, self.log_file)
         sys.stderr = TeeStdout(sys.stderr, self.log_file)
 
-        rospy.loginfo(f'Task log started: {filename}')
+        rospy.loginfo(f'Task log started: {self.filename}')
 
 
