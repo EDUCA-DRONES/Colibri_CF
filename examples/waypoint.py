@@ -11,20 +11,19 @@ class WaypointMission(Task):
     '''
 
     TAKEOFF_ALTITUDE = 1.4
+    waypoints = [
+        Waypoint(0, 2, 0),
+        Waypoint(2, 0, 0),
+        Waypoint(0, -2, 0),
+        Waypoint(-2, 0, 0),
+    ]
 
     def mission(self):
-        waypoints = [
-            Waypoint(0, 2, 0),
-            Waypoint(2, 0, 0),
-            Waypoint(0, -2, 0),
-            Waypoint(-2, 0, 0),
-        ]
-
         self.drone.arm()
         rospy.sleep(2)
 
         self.drone.navigate_wait(x=0, y=0, z=self.TAKEOFF_ALTITUDE, frame_id='body', auto_arm=True)
 
-        self.drone.waypoint_navigate(waypoints)
+        self.drone.waypoint_navigate(self.waypoints)
 
 WaypointMission().run()
