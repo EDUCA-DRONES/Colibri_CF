@@ -54,16 +54,6 @@ drone.navigate_wait(
 )
 ```
 
-**Parameters:**
-
-- `x` (float): X position relative to frame
-- `y` (float): Y position relative to frame
-- `z` (float): Altitude (positive up)
-- `yaw` (float): Yaw angle in radians. Use `float('nan')` to maintain current heading
-- `speed` (float): Maximum speed in m/s
-- `frame_id` (str): Reference frame ('body', 'map', or 'navigate_target')
-- `auto_arm` (bool): Automatically arm the drone if disarmed
-
 ### navigate_global_wait()
 
 Navigate using GPS coordinates and wait for arrival.
@@ -79,15 +69,6 @@ drone.navigate_global_wait(
 )
 ```
 
-**Parameters:**
-
-- `lat` (float): Latitude coordinate
-- `lon` (float): Longitude coordinate
-- `z` (float): Altitude above reference
-- `yaw` (float): Yaw angle in radians
-- `speed` (float): Movement speed in m/s
-- `auto_arm` (bool): Auto-arm before navigation
-
 ### wait_arrival()
 
 Wait until the drone reaches the target position.
@@ -95,10 +76,6 @@ Wait until the drone reaches the target position.
 ```python
 drone.wait_arrival(tolerance=0.1)  # tolerance in meters
 ```
-
-**Parameters:**
-
-- `tolerance` (float): Distance tolerance in meters
 
 ## Landing Methods
 
@@ -122,10 +99,6 @@ Arm or disarm the drone.
 drone.arm(arm=True)   # Arm the drone
 drone.arm(arm=False)  # Disarm the drone
 ```
-
-**Parameters:**
-
-- `arm` (bool): True to arm, False to disarm
 
 ## Position & Velocity Control
 
@@ -198,11 +171,6 @@ Make the drone orbit around its current position.
 drone.orbit(radius=1.0, speed=0.5)
 ```
 
-**Parameters:**
-
-- `radius` (float): Orbital radius in meters
-- `speed` (float): Angular velocity in rad/s
-
 ### is_flipped()
 
 Check if the drone is in an inverted position.
@@ -236,14 +204,9 @@ distance = drone.haversine_distance(
     lat2=59.234567,
     lon2=10.234567
 )
+
 print(f"GPS Distance: {distance:.2f} meters")
 ```
-
-**Parameters:**
-
-- `lat1`, `lon1`: First coordinate
-- `lat2`, `lon2`: Second coordinate
-- `radius` (optional): Earth's radius (default: 6371000 meters)
 
 ## Calibration
 
@@ -289,10 +252,6 @@ battery_voltage = drone.read_cparam("BATT_V_MULT")
 print(f"Battery voltage multiplier: {battery_voltage}")
 ```
 
-**Parameters:**
-
-- `param_name` (str): Parameter name
-
 **Returns:** Parameter value or NaN if failed
 
 ### write_cparam()
@@ -300,69 +259,12 @@ print(f"Battery voltage multiplier: {battery_voltage}")
 Write a parameter to the flight controller.
 
 ```python
-success = drone.write_cparam("BATT_V_MULT", 11.0)
+success = drone.write_cparam(param_name="BATT_V_MULT", value=11.0)
 if success:
     print("Parameter written successfully")
 ```
 
-**Parameters:**
-
-- `param_name` (str): Parameter name
-- `value` (float): Parameter value
-
 **Returns:** Boolean indicating success
-
-## Return to Launch
-
-### return_to_launch_confirm()
-
-Command the drone to return to its launch position with user confirmation.
-
-```python
-drone.return_to_launch_confirm(
-    takeoff_altitude=2.0,
-    base_lat=59.123456,
-    base_lon=10.123456
-)
-```
-
-**Parameters:**
-
-- `takeoff_altitude` (float): Altitude for return climb
-- `base_lat` (float): Launch latitude
-- `base_lon` (float): Launch longitude
-
-## Complete Example
-
-```python
-from colibricf.drone import Drone
-import rospy
-
-# Initialize drone
-drone = Drone()
-
-# Check telemetry
-telemetry = drone.get_telemetry()
-print(f"Battery: {telemetry.battery_voltage:.1f}V")
-
-# Arm and takeoff
-drone.arm()
-rospy.sleep(3)
-drone.navigate_wait(z=1.5, auto_arm=True)
-
-# Move forward
-drone.navigate_wait(x=2.0, y=0, z=1.5)
-
-# Orbit
-drone.orbit(radius=1.0, speed=0.3)
-
-# Return and land
-drone.navigate_wait(x=0, y=0, z=1.5)
-rospy.sleep(2)
-drone.land_wait()
-
-print("Mission complete!")
-```
 
 ## Notes
 

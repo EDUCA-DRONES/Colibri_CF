@@ -15,17 +15,6 @@ from colibricf.servo import Servo
 servo = Servo(gpio=14)
 ```
 
-### Parameters
-
-- `gpio` (int): GPIO pin number where the servo is connected
-
-### GPIO Pin Selection
-
-Common GPIO pins available on Raspberry Pi / Clover:
-- GPIO 14, 15, 17, 18, 22, 23, 24, 25, etc.
-
-Consult your specific hardware documentation for available pins.
-
 ### Error Handling
 
 ```python
@@ -123,29 +112,6 @@ servo.set_pulsewidth(pulsewidth=600)   # May strain servo
 servo.set_pulsewidth(pulsewidth=2400)  # May strain servo
 ```
 
-## Complete Examples
-
-### Multi-Servo Control
-
-```python
-from colibricf.servo import Servo
-import time
-
-# Multiple servos on different pins
-servo1 = Servo(gpio=14)  # Gimbal pitch
-servo2 = Servo(gpio=15)  # Gimbal roll
-
-# Sweep servo 1
-servo1.pwm_low(sleep=0.5)
-time.sleep(0.5)
-servo1.pwm_neutral(sleep=0.5)
-time.sleep(0.5)
-servo1.pwm_high(sleep=0.5)
-
-# Move servo 2
-servo2.pwm_neutral(sleep=1.0)
-```
-
 ### Smooth Sweep Movement
 
 ```python
@@ -159,31 +125,8 @@ for pulsewidth in range(500, 2001, 50):
     servo.set_pulsewidth(pulsewidth=pulsewidth, sleep=0.1)
 
 print("Sweep complete")
+
 ```
-
-### Payload Release Mechanism
-
-```python
-from colibricf.servo import Servo
-import time
-
-# Servo controlling cargo release mechanism
-release_servo = Servo(gpio=18)
-
-# Hold cargo (neutral/low position)
-release_servo.pwm_low(sleep=0.5)
-print("Cargo secured")
-
-# Later: release cargo
-time.sleep(5)
-release_servo.pwm_high(sleep=1.0)
-print("Cargo released")
-
-# Return servo to safe position
-time.sleep(2)
-release_servo.pwm_neutral(sleep=0.5)
-```
-
 ## Troubleshooting
 
 ### Servo Not Responding

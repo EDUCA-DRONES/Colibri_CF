@@ -10,16 +10,17 @@ This project abstracts complex drone control operations into easy-to-use modules
 
 ## Features
 
-- **Camera Control** - Manage drone camera operations and image capture
-- **Servo Control** - Control servo mechanisms for camera gimbal or payload manipulation
-- **Drone Flight Control** - Execute takeoff, landing, and autonomous flight operations
-- **Task Management** - Structure and schedule complex drone missions
+- **Camera Control** - Manage drone camera operations, image capture and video recording.
+- **Servo Control** - Control servo mechanisms for camera gimbal or payload manipulation.
+- **Drone Flight Control** - Execute takeoff, landing, and autonomous flight operations.
+- **Task Management** - Structure and schedule complex drone missions.
+- **Log system** - Register all flight log.
 
 ## Prerequisites
 
 Before installing Colibri Code Functions, ensure you have the following:
 
-- Python 3.7 or higher
+- Python 3.7 
 - The [Clover Framework](https://clover.coex.tech/en/) installed and configured
 - A compatible Colibri drone (optional, but highly recommend)
 
@@ -33,7 +34,7 @@ Install Colibri Code Functions via pip:
 pip3 install colibricf
 ```
 
-Or, for development installation from the repository:
+Or, for development installation from the repository (recommend):
 
 ```bash
 git clone https://github.com/EDUCA-DRONES/Colibri_CF.git
@@ -71,35 +72,40 @@ Mission().run()
 │   ├── servo.md
 │   └── task.md
 ├── examples
-│   ├── camera.py
 │   ├── flight.py
 │   ├── follow.py
+│   ├── gesture_control.py
+│   ├── record.py
 │   └── waypoint.py
 ├── LICENSE
 ├── pyproject.toml
 ├── README.md
+├── SECURITY.md
 └── src
     └── colibricf
-        ├── camera.py
-        ├── cv
-        │   ├── face_detect.py
+        ├── apps
         │   ├── follow.py
-        │   ├── haar_cascade
-        │   │   ├── haarcascade_eye.xml
-        │   │   ├── haarcascade_fullbody.xml
-        │   │   ├── haarcascade_upperbody.xml
-        │   │   └── haarcascade.xml
+        │   ├── gesture_control.py
         │   ├── __init__.py
+        │   └── handlers
+        │       ├── follow.py
+        │       └── gesture_control.py
+        ├── camera_utils
+        │   ├── recorder.py
+        │   └── topic_rate.py
+        ├── cv
         │   ├── models
         │   │   └── pose_landmarker_full.task
-        │   ├── qrcode.py
+        │   ├── __init__.py
         │   └── utils.py
-        ├── drone.py
+        ├── files
+        │   ├── filemanager.py
+        │   └── logger.py
         ├── __init__.py
+        ├── camera.py
+        ├── drone.py
         ├── servo.py
         └── task.py
-
-
 ```
 
 ## Documentation
@@ -111,19 +117,13 @@ Mission().run()
 
 ## Examples
 
-See the `example.py` file for complete usage examples.
-
-## Contributing
-
-We welcome contributions! Please feel free to submit pull requests or open issues for bugs and feature requests.
+See examples in examples directory.
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Support
-
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/EDUCA-DRONES/Colibri_CF).
 
 For more information about the Clover framework, visit: https://clover.coex.tech/en/
 
