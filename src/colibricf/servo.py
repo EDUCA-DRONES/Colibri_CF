@@ -69,4 +69,12 @@ class Servo():
         finally:
             self.pi.write(self.gpio, 0)
 
+    def change_pin(self, gpio: int):
+        '''
+        Change the servo gpio pin.
+        '''
+
+        self.gpio = gpio
+        self.pi.set_mode(self.gpio, pigpio.OUTPUT)
+
 

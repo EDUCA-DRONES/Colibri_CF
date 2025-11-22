@@ -12,7 +12,6 @@ class Mission(Task):
     TAKEOFF_ALTITUDE = 1.4
 
     def mission(self):
-        # Implement your mission here
         self.camera.record()
 
         self.drone.arm()

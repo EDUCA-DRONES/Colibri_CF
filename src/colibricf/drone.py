@@ -322,12 +322,20 @@ class Drone:
             rospy.sleep(0.5)  # Pause at waypoint
 
     def follow(self):
+        '''
+        Starts follow app.
+        '''
+
         from .apps.follow import _follow_callback
         rospy.loginfo('Starting follow app.')
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _follow_callback, queue_size=1)
         rospy.spin()
 
     def gesture_control(self):
+        '''
+        Starts gesture control app.
+        '''
+
         from .apps.gesture_control import _gc_callback
         rospy.loginfo('Starting gesture control app.')
         rospy.Subscriber('main_camera/image_raw_throttled', Image, _gc_callback, queue_size=1)

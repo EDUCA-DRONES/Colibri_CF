@@ -13,8 +13,6 @@ class Task(ABC):
     An abstract class to write mission.
     '''
 
-    RTL_ALTITUDE = 10
-
     def __init__(self, gpio: Union[int, None] = None) -> None:
         self.drone = Drone()
         self.logger = Logger()
@@ -27,10 +25,10 @@ class Task(ABC):
         self.camera = Camera()
 
     @abstractmethod
-    def mission(self):
+    def mission(self) -> None:
         raise Exception("Need implementation.")
 
-    def run(self):
+    def run(self) -> None:
         '''
         A secure method to run a mission. Useful in most cases.
         '''
@@ -47,27 +45,7 @@ class Task(ABC):
             rospy.logerr(e)
 
         finally:
-            try:
-                self.drone.land_wait()
-            except (rospy.service.ServiceException, rospy.exceptions.ROSInterruptException) as e:
-                rospy.logerr(e)
-
+            self.drone.land_wait()
             self.camera.stop()
             rospy.sleep(3)
             self.logger.stop()
-
-    def return_to_launch_confim(self):
-        '''
-        Use if you need to confirm the return.
-        '''
-        confirm = input("Return to launch position? (Y/n): ").strip().lower()
-        if confirm == 'y':
-            self.drone.set_mode(DroneMode.RTL)
-
-    def change_servo_pin(self, gpio:int):
-        '''
-        Change the servo gpio.
-        '''
-
-        self.servo.gpio = gpio
-
